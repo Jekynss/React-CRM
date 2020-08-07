@@ -1,54 +1,48 @@
-import React from 'react'
-import * as actions from '../actions/CardsAction'
+import React, { useEffect } from "react";
+import * as actions from "../actions/CardsAction";
+import Axios from "axios";
 
-    const initialState={
-        cards:[{
-            id: '1',
-            description:'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
-            fullName:'Lizard-1',
-            email: "Shanna@melissa.tv",
-            website: "hildegard.org",
-            phone: "493-170-9623 x156",
-            imageUrl:`https://robohash.org/${Math.random()}?set=any`
-        },{
-            id:'2',
-            description:'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
-            fullName:'Lizard-2',
-            email: "Nathan@yesenia.net",
-            website: "anastasia.net",
-            phone: "1-463-123-4447",
-            imageUrl:`https://robohash.org/${Math.random()}?set=any`
-        },{
-            id:'3',
-            description:'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
-            fullName:'Lizard-3',
-            email: "Sincere@april.biz",
-            website: "ramiro.info",
-            phone: "010-692-6593 x09125",
-            imageUrl:`https://robohash.org/${Math.random()}?set=any`
-        },{
-            id:'4',
-            description:'Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica',
-            fullName:'Lizard-4',
-            phone: "1-770-736-8031 x56442",
-            email: "Julianne.OConner@kory.org",
-            website: "kale.biz",
-            imageUrl:`https://robohash.org/${Math.random()}?set=any`
-        }]
-    }
+const initialState = {
+  cards: [],
+};
 
-    export default function CardReducer(state = initialState,action){
-        switch(action.type){
-            case(actions.ADD_CARD):{
-                return {...state,cards:[...state.cards,action.card]};
-            }
-            case(actions.DELETE_CARD):{
-                console.log(action.card_id);
-                return {...state,cards:state.cards.filter((card)=>card.id!==action.card_id)};
-            }
-            case(actions.UPDATE_CARD):{
-                return state;
-            }
-        }
-        return state;
+export default function CardReducer(state = initialState, action) {
+  switch (action.type) {
+    case actions.ADD_CARD: {
+      Axios.post(`http://localhost:3002/api/v1/people`, null, {
+        name: "Hello",
+        email: "Hello@Hello",
+      })
+        .then((response) => response.status)
+        .catch((err) => console.warn(err));
+      return { ...state, cards: [...state.cards, action.card] };
     }
+    case actions.DELETE_CARD: {
+      Axios.delete(`http://127.0.0.1:3002/api/v1/people/${action.card_id}`)
+        .then((response) => response.status)
+        .catch((err) => console.warn(err));
+      return {
+        ...state,
+        cards: state.cards.filter(
+          (card) => card.id.toString() !== action.card_id.toString()
+        ),
+      };
+    }
+    case actions.UPDATE_CARD: {
+      return {
+        ...state,
+        cards: state.cards.map((elem) => {
+          if (elem.id.toString() === action.card.id.toString()) {
+            return { ...elem, ...action.card };
+          } else {
+            return elem;
+          }
+        }),
+      };
+    }
+    case actions.SET_INITIAL_CARDS: {
+      return { ...state, cards: action.cards };
+    }
+  }
+  return state;
+}

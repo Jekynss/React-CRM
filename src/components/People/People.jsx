@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {createBrowserHistory} from 'history'
+import { createBrowserHistory } from "history";
 import { deleteCard, addCard } from "../../redux/actions/CardsAction";
 import { connect } from "react-redux";
 import { makeStyles, StylesProvider } from "@material-ui/core/styles";
@@ -20,6 +20,8 @@ import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import MenuList from "@material-ui/core/MenuList";
 import { Link } from "react-router-dom";
+import ProfileCard from "../ProfileCard/ProfileCard";
+import {Redirect} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   card_box: {
@@ -52,8 +54,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
   },
   people_container: {
-    width: "77%",
-    margin: "0 auto",
+    display: 'inline-flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   people_position: {
     position: "relative",
@@ -64,8 +67,12 @@ const useStyles = makeStyles((theme) => ({
     right: "0",
   },
   link: {
-    textDecoration: 'none',
-    color: 'inherit'
+    textDecoration: "none",
+    color: "inherit",
+  },
+  main_block:{
+    display:'flex',
+    justifyContent:'center'
   }
 }));
 
@@ -89,7 +96,6 @@ function People(props) {
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    console.log(event.currentTarget);
     setItemMenu(event.currentTarget.id);
   };
 
@@ -103,77 +109,24 @@ function People(props) {
     setItemMenu("");
   };
 
-  const handleClickEdit=()=>{
-    const history = createBrowserHistory();
-    history.push(`/people/${itemMenu}`);
-  }
   const handleLoadMore = () => {
     setLimit(limit + 3);
   };
 
   return (
     <Box className={classes.people_position}>
+      <Grid className={classes.main_block}>
       <Grid className={classes.people_container}>
         {state.cards.slice(0, limit).map((elem, index) => (
-          <Box key={index} id={elem.id} className={classes.card_box} m={8}>
-            <Card className={classes.card}>
-              <Link className={classes.link} to={`/people/${elem.id}`}>
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    alt="Contemplative Reptile"
-                    height="270"
-                    image={elem.imageUrl}
-                    title="Contemplative Reptile"
-                  />
-                </CardActionArea>
-              </Link>
-              <CardContent>
-                <Box className={classes.under_img}>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {elem.fullName}
-                  </Typography>
-                  <CardActions>
-                    <Button
-                      aria-controls="simple-menu"
-                      aria-haspopup="true"
-                      onClick={handleClick}
-                      id={elem.id}
-                    >
-                      ...
-                    </Button>
-                    <Menu
-                      id="simple-menu"
-                      anchorEl={anchorEl}
-                      display="flex"
-                      keepMounted
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                    >
-                      <MenuItem onClick={handleClickEdit}>
-                        <Link
-                          className={classes.link}
-                          to={`/people/${elem.id}`}
-                          className={classes.link}
-                        >
-                          Edit Profile
-                        </Link>
-                      </MenuItem>
-                      <MenuItem
-                        onClick={handleOpenModal}
-                        className={classes.delete_option}
-                      >
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </CardActions>
-                </Box>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  {elem.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
+          <ProfileCard
+            index={index}
+            elem={elem}
+            anchorEl={anchorEl}
+            handleClick={handleClick}
+            handleClose={handleClose}
+            handleOpenModal={handleOpenModal}
+            itemMenu={itemMenu}
+          />
         ))}
         <Modal
           aria-labelledby="transition-modal-title"
@@ -217,6 +170,7 @@ function People(props) {
             </div>
           </Fade>
         </Modal>
+      </Grid>
       </Grid>
       {state.cards.length > limit && (
         <Button

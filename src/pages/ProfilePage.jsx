@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import CardMedia from "@material-ui/core/CardMedia";
 import Box from "@material-ui/core/Box";
 import { Link, useHistory } from "react-router-dom";
-import { addCard } from "../redux/actions/CardsAction";
+import { addCard, updateCard } from "../redux/actions/CardsAction";
 import { connect } from "react-redux";
 import { Redirect } from 'react-router';
 import {createBrowserHistory} from 'history'
@@ -58,16 +58,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ProfilePage(props) {
-  const [card,setCard] = useState({fullName:'',description:'',phone:'',website:'',email:'',address:'',imageUrl:''});
+  const [card,setCard] = useState({name:'',description:'',phone:'',website:'',email:'',address:'',image_url:''});
   const [redirect, setRedirect] = useState(false);
-  const { addCard } = props;
+  const { addCard,updateCard } = props;
   const classes = useStyles();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(card.id){
+      updateCard(card);
+    }else{
     card.id=Math.random().toString();
-    card.imageUrl=`https://robohash.org/${Math.random()}?set=any`;
+    card.image_url=`https://robohash.org/${Math.random()}?set=any`;
     addCard(card);
+    }
     setRedirect(!redirect);
   };
 
@@ -80,8 +84,8 @@ function ProfilePage(props) {
   useEffect(()=>{
     setRedirect(false);
     const current_id=props.match.params.id;
-    const card = props.state.cards.find((card)=>card.id===current_id); 
-    card ? setCard(card) : setCard({fullName:'',description:'',phone:'',website:'',email:'',address:'',imageUrl:''}); 
+    const card = props.state.cards.find((card)=>card.id.toString()===current_id); 
+    card ? setCard(card) : setCard({name:'',description:'',phone:'',website:'',email:'',address:'',image_url:''}); 
   },[])
 
   return (
@@ -105,7 +109,7 @@ function ProfilePage(props) {
                   alt="Human"
                   height="270"
                   className={classes.imagePlaceHolder}
-                  image={card.imageUrl ? card.imageUrl : "https://www.pngkey.com/png/full/349-3499617_person-placeholder-person-placeholder.png"}
+                  image={card.image_url ? card.image_url : "https://www.pngkey.com/png/full/349-3499617_person-placeholder-person-placeholder.png"}
                   title="Contemplative Reptile"
                 />
                 <Button
@@ -126,7 +130,7 @@ function ProfilePage(props) {
             justify="space-between"
             align="center"
           >
-            <TextField id="Fullname" label="Fullname" value={card.fullName} onChange={handleChange} name='fullName' required />
+            <TextField id="Fullname" label="Fullname" value={card.name} onChange={handleChange} name='name' required />
             <TextField id="Phone"  value={card.phone} onChange={handleChange} name='phone' label="Phone" />
             <TextField id="Email" value={card.email} onChange={handleChange} name='email' label="Email" required />
             <TextField id="WebSite" value={card.website} onChange={handleChange} name='website' label="WebSite" />
@@ -138,6 +142,8 @@ function ProfilePage(props) {
           id="about_me"
           type="text"
           name='description'
+          multiline
+          rowsMax={4}
           onChange={handleChange}
           className={classes.about_text}
           label="About me"
@@ -163,7 +169,7 @@ function ProfilePage(props) {
             type="submit"
             className={classes.submit_button}
           >
-            Submit
+            {card.id ? 'UPDATE' : 'CREATE'}
           </Button>
         </Box>
       </form>
@@ -177,6 +183,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   addCard,
+  updateCard,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfilePage);
