@@ -1,16 +1,18 @@
-import React from 'react'
+import React,{useState} from 'react'
+import { deleteCard, addCard } from "../../redux/actions/CardsAction";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardMedia from "@material-ui/core/CardMedia";
-import { makeStyles, StylesProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
     card_box: {
@@ -18,20 +20,36 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
       maxWidth: 350,
+      height: 460
     },
     delete_option: { color: "red" },
     under_img: { display: "flex", justifyContent: "space-between" },
     link: {
       textDecoration: 'none',
       color: 'inherit'
+    },
+    textDescription: {
+      overflowWrap: 'anywhere'
     }
   }));
 
-export default function ProfileCard(props) {
-    const {index,elem,anchorEl,handleClick,handleClose,handleOpenModal, itemMenu} = props
+function ProfileCard(props) {
+  const { state, deleteCard, addCard, elem, handleOpenModal, handleCloseModal, setItemMenu, itemMenu,setAnchorEl,anchorEl } = props;
+
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+      setItemMenu(event.currentTarget.id);
+    };
+  
+    const handleClose = () => {
+      setAnchorEl(null);
+      setItemMenu("");
+    };
+
+    
     const classes = useStyles();
     return (
-        <Box key={index} id={elem.id} className={classes.card_box} m={8} width="260px">
+        <Box id={elem.id} className={classes.card_box} m={8} width="260px">
         <Card className={classes.card}>
           <Link className={classes.link} to={`/people/${elem.id}`}>
             <CardActionArea>
@@ -70,7 +88,6 @@ export default function ProfileCard(props) {
                     <Link
                       className={classes.link}
                       to={`/people/${itemMenu}`}
-                      className={classes.link}
                     >
                       Edit Profile
                     </Link>
@@ -84,7 +101,7 @@ export default function ProfileCard(props) {
                 </Menu>
               </CardActions>
             </Box>
-            <Typography variant="body2" color="textSecondary" component="p">
+            <Typography variant="body2" color="textSecondary" component="p" className={classes.textDescription}>
               {elem.description}
             </Typography>
           </CardContent>
@@ -92,3 +109,14 @@ export default function ProfileCard(props) {
       </Box>
     )
 }
+
+const mapStateToProps = (state) => ({
+  state,
+});
+
+const mapDispatchToProps = {
+  deleteCard,
+  addCard,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileCard);

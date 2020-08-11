@@ -1,16 +1,18 @@
 import React,{useState,useEffect} from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-import InputBase from "@material-ui/core/InputBase";
-import TextField from "@material-ui/core/TextField";
+import { makeStyles} from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import CardMedia from "@material-ui/core/CardMedia";
-import Box from "@material-ui/core/Box";
-import { Link, useHistory } from "react-router-dom";
-import { addCard, updateCard } from "../redux/actions/CardsAction";
+import { asyncUpdateCardRequest, asyncAddCardRequest } from "../redux/actions/CardsAction";
 import { connect } from "react-redux";
 import { Redirect } from 'react-router';
-import {createBrowserHistory} from 'history'
+import FullNameInput from "../components/FullNameInput/FullNameInput";
+import EmailInput from "../components/EmailInput/EmailInput";
+import PhoneInput from "../components/PhoneInput/PhoneInput";
+import WebSiteInput from "../components/WebSiteInput/WebSiteInput";
+import AddressInput from "../components/AddressInput/AddressInput";
+import DesctiptionInput from "../components/DescriptionInput/DesctiptionInput";
+import ImageInput from "../components/ImageInput/ImageInput";
+import FormButtons from "../components/FormButtons/FormButtons";
+import Header from "../components/Header/Header";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "row",
     flexWrap: "nowrap",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   input_texts: {
     width: "300px",
@@ -58,71 +60,52 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ProfilePage(props) {
-  const [card,setCard] = useState({name:'',description:'',phone:'',website:'',email:'',address:'',image_url:''});
+  const cardTemplate = { 
+    name:'',
+    description:'',
+    phone:'',
+    website:'',
+    email:'',
+    address:'',
+    image_url:''
+  };
+  const [card,setCard] = useState(cardTemplate);
+  const [wasChanged,setWasChanged] = useState(false);
   const [redirect, setRedirect] = useState(false);
-  const { addCard,updateCard } = props;
+  const { asyncUpdateCardRequest, asyncAddCardRequest, state } = props;
   const classes = useStyles();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setWasChanged(false);
     if(card.id){
-      updateCard(card);
+      asyncUpdateCardRequest(card);
     }else{
-    card.id=Math.random().toString();
     card.image_url=`https://robohash.org/${Math.random()}?set=any`;
-    addCard(card);
+    asyncAddCardRequest(card);
+    setRedirect(true);
     }
-    setRedirect(!redirect);
   };
 
   const handleChange = (e) =>{
-    const name=e.target.name;
-    const value=e.target.value;
-    setCard({...card,[name]:value});
+    if(!wasChanged)
+      setWasChanged(true)
+    setCard({...card,[e.target.name]:e.target.value});
   }
 
   useEffect(()=>{
-    setRedirect(false);
     const current_id=props.match.params.id;
-    const card = props.state.cards.find((card)=>card.id.toString()===current_id); 
-    card ? setCard(card) : setCard({name:'',description:'',phone:'',website:'',email:'',address:'',image_url:''}); 
-  },[])
+    const card = state.cards.find((card)=>card.id.toString() === current_id); 
+    card ? setCard(card) : setCard(cardTemplate); 
+  },[state])
 
   return (
     <div className={classes.profile_section}>
-      {redirect && <Redirect push to="/people" />}
+      <Header header="Profile"/>
+      {redirect && <Redirect push to="/Home" />}
       <form className={classes.main_form} onSubmit={handleSubmit}>
         <Grid className={classes.form_container}>
-          <Grid>
-            <input
-              accept="image/*"
-              className={classes.input}
-              style={{ display: "none" }}
-              id="raised-button-file"
-              multiple
-              type="file"
-            />
-            <Box mt={2.8}>
-              <label htmlFor="raised-button-file">
-                <CardMedia
-                  component="img"
-                  alt="Human"
-                  height="270"
-                  className={classes.imagePlaceHolder}
-                  image={card.image_url ? card.image_url : "https://www.pngkey.com/png/full/349-3499617_person-placeholder-person-placeholder.png"}
-                  title="Contemplative Reptile"
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component="span"
-                  className={classes.upload_button}
-                >
-                  Upload
-                </Button>
-              </label>
-            </Box>
-          </Grid>
+          <ImageInput classes={classes} card={card}/>
           <Grid
             container
             className={classes.input_texts}
@@ -130,48 +113,15 @@ function ProfilePage(props) {
             justify="space-between"
             align="center"
           >
-            <TextField id="Fullname" label="Fullname" value={card.name} onChange={handleChange} name='name' required />
-            <TextField id="Phone"  value={card.phone} onChange={handleChange} name='phone' label="Phone" />
-            <TextField id="Email" value={card.email} onChange={handleChange} name='email' label="Email" required />
-            <TextField id="WebSite" value={card.website} onChange={handleChange} name='website' label="WebSite" />
-            <TextField id="Address" value={card.address} onChange={handleChange} name='address' label="Address" />
+            <FullNameInput handleChange={handleChange} card={card}/>
+            <EmailInput handleChange={handleChange} card={card}/>
+            <PhoneInput handleChange={handleChange} card={card}/>
+            <WebSiteInput handleChange={handleChange} card={card}/>
+            <AddressInput handleChange={handleChange} card={card}/>
           </Grid>
         </Grid>
-        <TextField
-          variant="outlined"
-          id="about_me"
-          type="text"
-          name='description'
-          multiline
-          rowsMax={4}
-          onChange={handleChange}
-          className={classes.about_text}
-          label="About me"
-          value={card.description}
-        />
-        <Box className={classes.submit_wrapper}>
-          <Link className={classes.link} to={"/people"}>
-            <Box mr={4}>
-              <Button
-                variant="outlined"
-                id="submit"
-                color="primary"
-                className={classes.submit_button}
-              >
-                Back
-              </Button>
-            </Box>
-          </Link>
-          <Button
-            variant="contained"
-            id="submit"
-            color="primary"
-            type="submit"
-            className={classes.submit_button}
-          >
-            {card.id ? 'UPDATE' : 'CREATE'}
-          </Button>
-        </Box>
+        <DesctiptionInput handleChange={handleChange} card={card} about_text={classes.about_text}/>
+        <FormButtons wasChanged={wasChanged} classes={classes} card={card}/>
       </form>
     </div>
   );
@@ -182,8 +132,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  addCard,
-  updateCard,
+  asyncUpdateCardRequest,
+  asyncAddCardRequest,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfilePage);

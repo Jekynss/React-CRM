@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,6 +11,7 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,14 +28,19 @@ const useStyles = makeStyles((theme) => ({
   },
   pages: {
     color: "white",
+    fontSize: "16px",
+    fontFamily: "sans-serif"
   },
   link: {
     textDecoration: 'none',
     color: 'inherit'
+  },
+  navBar:{
+    width: '94%'
   }
 }));
 
-export default function Header() {
+export default function Header(props) {
   const classes = useStyles();
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -93,25 +99,25 @@ export default function Header() {
               </Menu>
               <Grid className={classes.direction}>
                 <Typography variant="h5" className={classes.title}>
-                  People
+                  {props.header}
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container justify="center">
-              {["home", "projects", "people"].map((anchor) => (
+            <Grid container justify="center" className={classes.navBar}>
+              {["Home", "Projects", "People"].map((anchor) => (
                 <Grid
                   item
                   xs={2}
                   className={classes.direction}
                   key={Math.random()}
                 >
-                  <Button
+                  <Box
                     aria-controls="simple-menu"
                     aria-haspopup="true"
                     className={classes.pages}
                   >
-                    <Link className={classes.link} to={"/people"}>{anchor}</Link>
-                  </Button>
+                    <Link className={classes.link} to={`/${anchor}`}>{anchor}</Link>
+                  </Box>
                 </Grid>
               ))}
             </Grid>

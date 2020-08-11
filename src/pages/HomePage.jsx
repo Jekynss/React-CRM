@@ -6,6 +6,7 @@ import People from '../components/People/People'
 function PeoplePage() {
   return (
     <div className="PeoplePage">
+      <Header header="Home"/>
       <ImageSection/>
       <People/>
     </div>

@@ -1,12 +1,14 @@
 import React from 'react';
 import {Provider} from 'react-redux'
 import ReactDOM from 'react-dom';
-import {createStore} from 'redux'
+import {createStore, applyMiddleware} from 'redux'
+import thunk from 'redux-thunk';
 import App from './App';
 import reducer from './redux/reducers/CardsReducer'
 import { BrowserRouter} from "react-router-dom";
+import { composeWithDevTools } from 'redux-devtools-extension';
 
-const store = createStore(reducer)
+const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
 
 ReactDOM.render(
   <React.StrictMode>

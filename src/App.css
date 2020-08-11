@@ -1,3 +1,10 @@
 body{
   margin:0;
 }
+
+.alert_message{
+  height:70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
