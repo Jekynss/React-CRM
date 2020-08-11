@@ -5,7 +5,6 @@ import LoginForm from '../components/LoginForm/LoginForm'
 function LoginPage() {
   return (
     <div className="LoginPage">
-      <Header header="Login"/>
       <LoginForm/>
     </div>
   );

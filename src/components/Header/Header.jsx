@@ -97,11 +97,6 @@ export default function Header(props) {
                   Logout
                 </MenuItem>
               </Menu>
-              <Grid className={classes.direction}>
-                <Typography variant="h5" className={classes.title}>
-                  {props.header}
-                </Typography>
-              </Grid>
             </Grid>
             <Grid container justify="center" className={classes.navBar}>
               {["Home", "Projects", "People"].map((anchor) => (
@@ -116,7 +111,7 @@ export default function Header(props) {
                     aria-haspopup="true"
                     className={classes.pages}
                   >
-                    <Link className={classes.link} to={`/${anchor}`}>{anchor}</Link>
+                    <Link className={classes.link} to={`/${anchor.toLowerCase()}`}>{anchor}</Link>
                   </Box>
                 </Grid>
               ))}

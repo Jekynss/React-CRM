@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: "0",
     right: "0",
+    marginRight: '64px',
+    marginTop: '14px',
   },
   link: {
     textDecoration: "none",
@@ -40,21 +42,27 @@ const useStyles = makeStyles((theme) => ({
   },
   main_block: {
     width: "1200px",
+    position:'relative',
+    //width: "fit-content",
     margin: "0 auto",
   },
 }));
 
 function People(props) {
-  const { state, asyncDeleteCardRequest, closePopup } = props;
+  const {
+    state,
+    asyncDeleteCardRequest,
+    closePopup,
+    initLimit,
+  } = props;
   const [open, setOpen] = useState(false);
   const [itemMenu, setItemMenu] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
+  const [limit, setLimit] = useState(initLimit);
   const classes = useStyles();
-
-  const [limit, setLimit] = useState(3);
-
+  console.log(initLimit);
   const handleLoadMore = () => {
-    setLimit(limit + 3);
+    setLimit(limit+3);
   };
 
   const handleCloseModal = () => {
@@ -73,9 +81,20 @@ function People(props) {
 
   return (
     <Box>
-      <StatusMessage closePopup={closePopup} state={state}/>
+      <StatusMessage closePopup={closePopup} state={state} />
       <Box className={classes.people_position}>
         <Grid className={classes.main_block}>
+        {props.buttonCreate ?(
+        <Link className={classes.link} to={"/people/new"}>
+          <Button
+            className={classes.add_new_button}
+            size="large"
+            color="secondary"
+            variant="contained"
+          >
+            Add new profile
+          </Button>
+        </Link>) : ''}
           <Grid className={classes.people_container}>
             {state.cards.slice(0, limit).map((elem, index) => (
               <ProfileCard
@@ -88,7 +107,11 @@ function People(props) {
                 setAnchorEl={setAnchorEl}
               />
             ))}
-            <DeleteModal open={open} handleCloseModal={handleCloseModal} handleClickDelete={handleClickDelete}/>
+            <DeleteModal
+              open={open}
+              handleCloseModal={handleCloseModal}
+              handleClickDelete={handleClickDelete}
+            />
           </Grid>
         </Grid>
         {state.cards.length > limit && (
@@ -101,16 +124,6 @@ function People(props) {
             Load more
           </Button>
         )}
-        <Link className={classes.link} to={"/people/new"}>
-          <Button
-            className={classes.add_new_button}
-            size="large"
-            color="secondary"
-            variant="contained"
-          >
-            Add new profile
-          </Button>
-        </Link>
       </Box>
     </Box>
   );

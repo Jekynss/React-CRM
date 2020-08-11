@@ -1,5 +1,6 @@
 import React,{useState,useEffect} from "react";
 import { makeStyles} from "@material-ui/core/styles";
+import {closePopup} from '../redux/actions/CardsAction'
 import Grid from "@material-ui/core/Grid";
 import { asyncUpdateCardRequest, asyncAddCardRequest } from "../redux/actions/CardsAction";
 import { connect } from "react-redux";
@@ -13,6 +14,7 @@ import DesctiptionInput from "../components/DescriptionInput/DesctiptionInput";
 import ImageInput from "../components/ImageInput/ImageInput";
 import FormButtons from "../components/FormButtons/FormButtons";
 import Header from "../components/Header/Header";
+import StatusMessage from "../components/StatusMessage/StatusMessage";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -95,13 +97,13 @@ function ProfilePage(props) {
 
   useEffect(()=>{
     const current_id=props.match.params.id;
-    const card = state.cards.find((card)=>card.id.toString() === current_id); 
+    const card = state.cards.find((card)=>card.id?.toString() === current_id); 
     card ? setCard(card) : setCard(cardTemplate); 
   },[state])
 
   return (
     <div className={classes.profile_section}>
-      <Header header="Profile"/>
+      <StatusMessage closePopup={closePopup} state={state}/>
       {redirect && <Redirect push to="/Home" />}
       <form className={classes.main_form} onSubmit={handleSubmit}>
         <Grid className={classes.form_container}>
@@ -134,6 +136,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   asyncUpdateCardRequest,
   asyncAddCardRequest,
+  closePopup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfilePage);

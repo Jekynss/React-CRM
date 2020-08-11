@@ -4,7 +4,8 @@ import Axios from "axios";
 const initialState = {
   cards: [],
   error:'',
-  message:''
+  message:'',
+  limit:3
 };
 
 export default function CardReducer(state = initialState, action) {
@@ -58,6 +59,10 @@ export default function CardReducer(state = initialState, action) {
 
     case actions.SET_INITIAL_CARDS: {
       return { ...state, cards: action.cards };
+    }
+
+    case actions.SET_LIMIT: {
+      return { ...state, limit:state.limit+action.sumNumber };
     }
 
     default:
