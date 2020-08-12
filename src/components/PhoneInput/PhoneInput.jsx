@@ -9,6 +9,7 @@ export default function PhoneInput(props) {
         id="Phone"
         value={card.phone}
         onChange={handleChange}
+        type="tel"
         name="phone"
         label="Phone"
       />

@@ -10,6 +10,7 @@ import Axios from "axios";
 import {connect} from 'react-redux'
 import {setInitialCards} from './redux/actions/CardsAction'
 import Header from './components/Header/Header'
+import RegistrationPage from './pages/RegistrationPage';
 
 function App(props) {
   const {setInitialCards} = props;
@@ -22,11 +23,11 @@ function App(props) {
       <Header/>
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/home" component={HomePage} />
+        <Route exact path="/registration" component={RegistrationPage} />
+        <Route exact path="/" component={HomePage} />
         <Route exact path="/people" component={PeoplePage}/>
         <Route exact path="/projects" component={ProjectsPage}/>
         <Route path="/people/:id" component={ProfilePage} />
-        <Route path="/" component={HomePage} />
       </Switch>
     </div>
   );

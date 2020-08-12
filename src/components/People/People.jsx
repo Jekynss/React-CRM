@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   asyncDeleteCardRequest,
   addCard,
@@ -13,6 +13,7 @@ import StatusMessage from "../StatusMessage/StatusMessage";
 import DeleteModal from "../DeleteModal/DeleteModal";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
+import {dispatch} from '../../index';
 
 const useStyles = makeStyles((theme) => ({
   card_box: {
@@ -30,39 +31,42 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
   },
   add_new_button: {
-    position: "absolute",
     top: "0",
     right: "0",
-    marginRight: '64px',
-    marginTop: '14px',
+    marginRight: "140px",
+  },
+  buttonWrapper:{
+    display:'flex',
+    flexDirection:'row',
+    justifyContent:'space-between'
   },
   link: {
     textDecoration: "none",
     color: "inherit",
   },
   main_block: {
-    width: "1200px",
-    position:'relative',
+    width: "1400px",
+    position: "relative",
     //width: "fit-content",
     margin: "0 auto",
   },
+  pageName:{
+    marginLeft:"40px"
+  }
 }));
 
 function People(props) {
-  const {
-    state,
-    asyncDeleteCardRequest,
-    closePopup,
-    initLimit,
-  } = props;
+  const { state, asyncDeleteCardRequest, closePopup, limitPeople,  setLimitToRedux} = props;
   const [open, setOpen] = useState(false);
   const [itemMenu, setItemMenu] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
-  const [limit, setLimit] = useState(initLimit);
+  const [limit, setLimit] = useState(limitPeople);
   const classes = useStyles();
-  console.log(initLimit);
+  
   const handleLoadMore = () => {
-    setLimit(limit+3);
+    const newLimit=limit+4;
+    dispatch(setLimitToRedux(newLimit))
+    setLimit(newLimit);
   };
 
   const handleCloseModal = () => {
@@ -80,39 +84,48 @@ function People(props) {
   };
 
   return (
-    <Box>
+    <Box mt={8}>
       <StatusMessage closePopup={closePopup} state={state} />
       <Box className={classes.people_position}>
         <Grid className={classes.main_block}>
-        {props.buttonCreate ?(
-        <Link className={classes.link} to={"/people/new"}>
-          <Button
-            className={classes.add_new_button}
-            size="large"
-            color="secondary"
-            variant="contained"
-          >
-            Add new profile
-          </Button>
-        </Link>) : ''}
-          <Grid className={classes.people_container}>
-            {state.cards.slice(0, limit).map((elem, index) => (
-              <ProfileCard
+          {props.buttonCreate ? (
+            <div className={classes.buttonWrapper}>
+            <h1 className={classes.pageName}>People</h1>
+            <Link className={classes.link} to={"/people/new"}>
+              <Button
+                className={classes.add_new_button}
+                size="large"
+                color="secondary"
+                variant="contained"
+              >
+                Add new profile
+              </Button>
+            </Link>
+            </div>
+          ) : (
+            ""
+          )}
+          <Box>
+            <Grid className={classes.people_container}>
+              {state.cards.slice(0, limit).map((elem, index) => (
+                <ProfileCard
+                  key={elem.id}
+                  handleCloseModal={handleCloseModal}
+                  handleOpenModal={handleOpenModal}
+                  elem={elem}
+                  setItemMenu={setItemMenu}
+                  itemMenu={itemMenu}
+                  anchorEl={anchorEl}
+                  setAnchorEl={setAnchorEl}
+                />
+              ))}
+              <DeleteModal
+                open={open}
                 handleCloseModal={handleCloseModal}
-                handleOpenModal={handleOpenModal}
-                elem={elem}
-                setItemMenu={setItemMenu}
-                itemMenu={itemMenu}
-                anchorEl={anchorEl}
-                setAnchorEl={setAnchorEl}
+                handleClickDelete={handleClickDelete}
               />
-            ))}
-            <DeleteModal
-              open={open}
-              handleCloseModal={handleCloseModal}
-              handleClickDelete={handleClickDelete}
-            />
-          </Grid>
+            </Grid>
+          </Box>
         </Grid>
         {state.cards.length > limit && (
           <Button

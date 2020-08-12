@@ -2,14 +2,12 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
 import { Link } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 
@@ -42,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header(props) {
   const classes = useStyles();
-  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -99,19 +96,19 @@ export default function Header(props) {
               </Menu>
             </Grid>
             <Grid container justify="center" className={classes.navBar}>
-              {["Home", "Projects", "People"].map((anchor) => (
+              {["Home", "Projects", "People"].map((anchor,index) => (
                 <Grid
                   item
                   xs={2}
                   className={classes.direction}
-                  key={Math.random()}
+                  key={index}
                 >
                   <Box
                     aria-controls="simple-menu"
                     aria-haspopup="true"
                     className={classes.pages}
                   >
-                    <Link className={classes.link} to={`/${anchor.toLowerCase()}`}>{anchor}</Link>
+                    <Link className={classes.link} to={`/${anchor == "Home" ? "" : anchor.toLowerCase()}`}>{anchor}</Link>
                   </Box>
                 </Grid>
               ))}

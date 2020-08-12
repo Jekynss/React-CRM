@@ -9,7 +9,7 @@ import { BrowserRouter} from "react-router-dom";
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
-
+export const dispatch = store.dispatch; 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

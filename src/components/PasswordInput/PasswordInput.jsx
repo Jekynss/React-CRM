@@ -5,7 +5,7 @@ export default function PasswordInput(props) {
     const {user, handleChange} = props;
     return (
         <div>
-            <TextField id="Password" value={user.password} onChange={handleChange} name='password' label="Password" />
+            <TextField id="Password" type="password" value={user.password} onChange={handleChange} name='password' label="Password" />
         </div>
     )
 }

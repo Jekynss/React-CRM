@@ -1,18 +1,16 @@
-import React,{useState} from 'react'
-import { deleteCard, addCard } from "../../redux/actions/CardsAction";
+import React from 'react'
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardMedia from "@material-ui/core/CardMedia";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles,createMuiTheme } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 import Card from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
     card_box: {
@@ -34,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 function ProfileCard(props) {
-  const { state, deleteCard, addCard, elem, handleOpenModal, handleCloseModal, setItemMenu, itemMenu,setAnchorEl,anchorEl } = props;
+  const { elem, handleOpenModal, setItemMenu, itemMenu,setAnchorEl,anchorEl } = props;
 
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
@@ -46,10 +44,9 @@ function ProfileCard(props) {
       setItemMenu("");
     };
 
-    
     const classes = useStyles();
     return (
-        <Box id={elem.id} className={classes.card_box} m={8} width="260px">
+        <Box id={elem.id} className={classes.card_box} m={4} width="260px">
         <Card className={classes.card}>
           <Link className={classes.link} to={`/people/${elem.id}`}>
             <CardActionArea>
@@ -110,13 +107,5 @@ function ProfileCard(props) {
     )
 }
 
-const mapStateToProps = (state) => ({
-  state,
-});
 
-const mapDispatchToProps = {
-  deleteCard,
-  addCard,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileCard);
+export default ProfileCard;

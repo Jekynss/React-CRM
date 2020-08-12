@@ -1,17 +1,17 @@
 import * as actions from "../actions/CardsAction";
-import Axios from "axios";
 
 const initialState = {
   cards: [],
   error:'',
   message:'',
-  limit:3
+  limitHome:4,
+  limitPeople:12
 };
 
 export default function CardReducer(state = initialState, action) {
   switch (action.type) {
     case actions.ADD_CARD: {
-      return { ...state, cards: [...state.cards, action.card], popup: true };
+      return { ...state, cards: [action.card,...state.cards], popup: true };
     }
     case actions.DELETE_CARD: {
       return {
@@ -61,8 +61,12 @@ export default function CardReducer(state = initialState, action) {
       return { ...state, cards: action.cards };
     }
 
-    case actions.SET_LIMIT: {
-      return { ...state, limit:state.limit+action.sumNumber };
+    case actions.SET_LIMIT_HOME: {
+      return { ...state, limitHome:action.limit };
+    }
+
+    case actions.SET_LIMIT_PEOPLE: {
+      return { ...state, limitPeople:action.limit };
     }
 
     default:
