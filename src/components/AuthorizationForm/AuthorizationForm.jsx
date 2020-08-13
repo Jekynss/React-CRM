@@ -42,7 +42,7 @@ export default function AuthorizationForm(props) {
         onError={(errors) => console.log(errors)}
       >
         <h1 className={classes.header}>{name}</h1>
-        {props.children}
+        <Box className={classes.inputWrapper}>{props.children}</Box>
         <div>
           <Link
             to={`/${secondLink.toLowerCase()}`}

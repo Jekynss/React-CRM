@@ -1,10 +1,10 @@
-import React, { Fragment } from "react";
+import React from "react";
 import TextField from "@material-ui/core/TextField";
 
 export default function PhoneInput(props) {
   const { handleChange, card } = props;
   return (
-    <Fragment>
+    <>
       <TextField
         id="Phone"
         value={card.phone}
@@ -13,6 +13,6 @@ export default function PhoneInput(props) {
         name="phone"
         label="Phone"
       />
-    </Fragment>
+    </>
   );
 }

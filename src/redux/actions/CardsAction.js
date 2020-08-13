@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { dispatchDebouncer }  from '../../components/utils';
+import { dispatchDebouncer } from "../../components/utils";
 
 export const ADD_CARD = "ADD_CARD";
 export const DELETE_CARD = "DELETE_CARD";
@@ -10,6 +10,9 @@ export const SHOW_SUCCESS_POPUP = "SHOW_SUCCESS_POPUP";
 export const SHOW_ERROR_POPUP = "SHOW_ERROR_POPUP";
 export const SET_LIMIT_HOME = "SET_LIMIT_HOME";
 export const SET_LIMIT_PEOPLE = "SET_LIMIT_PEOPLE";
+
+export const SET_TOKEN = "SET_TOKEN";
+export const SET_REDIRECT = "SET_REDIRECT";
 
 export const addCard = (card) => ({
   type: ADD_CARD,
@@ -55,6 +58,16 @@ export const setLimitPeopleToRedux = (limit) => ({
   limit,
 });
 
+export const setToken = (token) => ({
+  type: SET_TOKEN,
+  token,
+});
+
+export const setRedirect = (link) => ({
+  type: SET_REDIRECT,
+  link,
+});
+
 export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
     const { data } = await Axios.post(
@@ -66,9 +79,11 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
       ? dispatch(showSuccessPopup(data.message))
       : dispatch(showErrorPopup(data.error));
   } catch (error) {
-    dispatch(showErrorPopup(error.message));
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
   }
-  dispatchDebouncer(closePopup,3000);
+  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
@@ -77,13 +92,13 @@ export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
       `http://127.0.0.1:3002/api/v1/people/${card_id}`
     );
     dispatch(deleteCard(card_id));
-    data.message
-      ? dispatch(showSuccessPopup(data.message))
-      : dispatch(showErrorPopup(data.error));
+    dispatch(showSuccessPopup(data.message));
   } catch (error) {
-    dispatch(showErrorPopup(error.message));
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
   }
-  dispatchDebouncer(closePopup,3000);
+  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncUpdateCardRequest = (card) => async (dispatch) => {
@@ -93,12 +108,41 @@ export const asyncUpdateCardRequest = (card) => async (dispatch) => {
       card
     );
     dispatch(updateCard(card));
-    data.message
-      ? dispatch(showSuccessPopup(data.message))
-      : dispatch(showErrorPopup(data.error));
+    dispatch(showSuccessPopup(data.message));
   } catch (error) {
-    dispatch(showErrorPopup(error.message));
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
   }
-  dispatchDebouncer(closePopup,3000);
+  dispatchDebouncer(closePopup, 3000);
 };
- 
+
+export const asyncRegisterUser = (user) => async (dispatch) => {
+  try {
+    const { data } = await Axios.post(
+      `http://127.0.0.1:3002/api/v1/users/registration`,
+      user
+    );
+    dispatch(showSuccessPopup(data.msg));
+    dispatch(setRedirect("/login"));
+  } catch (error) {
+    dispatch(showErrorPopup(`${error.message}: ${error.response.data.msg}`));
+  }
+  dispatchDebouncer(closePopup, 3000);
+};
+
+export const asyncAuthorizeUser = (user) => async (dispatch) => {
+  try {
+    const { data } = await Axios.post(
+      `http://127.0.0.1:3002/api/v1/users/login`,
+      user
+    );
+    dispatch(setToken(data.token));
+    data.error
+      ? dispatch(showErrorPopup(data.msg))
+      : dispatch(setRedirect("/"));
+  } catch (error) {
+    dispatch(showErrorPopup(`${error.message}: ${error.response.data.msg}`));
+  }
+  dispatchDebouncer(closePopup, 3000);
+};

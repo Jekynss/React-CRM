@@ -93,7 +93,6 @@ function ProfilePage(props) {
     asyncUpdateCardRequest,
     asyncAddCardRequest,
     asyncDeleteCardRequest,
-    closePopup,
     state,
   } = props;
   const classes = useStyles();
@@ -137,7 +136,7 @@ function ProfilePage(props) {
 
   return (
     <div className={classes.profile_section}>
-      <StatusMessage closePopup={closePopup} state={state} />
+      <StatusMessage/>
       {redirect && <Redirect push to="/" />}
       <ValidatorForm
         onSubmit={handleSubmit}
@@ -198,7 +197,6 @@ const mapDispatchToProps = {
   asyncUpdateCardRequest,
   asyncAddCardRequest,
   asyncDeleteCardRequest,
-  closePopup,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfilePage);

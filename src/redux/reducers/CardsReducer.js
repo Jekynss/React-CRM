@@ -5,7 +5,8 @@ const initialState = {
   error:'',
   message:'',
   limitHome:4,
-  limitPeople:12
+  limitPeople:12,
+  token:''
 };
 
 export default function CardReducer(state = initialState, action) {
@@ -67,6 +68,14 @@ export default function CardReducer(state = initialState, action) {
 
     case actions.SET_LIMIT_PEOPLE: {
       return { ...state, limitPeople:action.limit };
+    }
+
+    case actions.SET_TOKEN: {
+      return { ...state, token:action.token};
+    }
+
+    case actions.SET_REDIRECT: {
+      return { ...state, redirectLink:action.link};
     }
 
     default:

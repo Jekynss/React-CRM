@@ -4,6 +4,8 @@ import Collapse from "@material-ui/core/Collapse";
 import Alert from "@material-ui/lab/Alert";
 import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
+import { connect } from "react-redux";
+import {closePopup} from '../../redux/actions/CardsAction'
 
 const useStyles = makeStyles((theme) => ({
     popup: {
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
       },
   }));
 
-export default function StatusMessage(props) {
+function StatusMessage(props) {
     const [openPopup, setOpenPopup] = useState('');
     const {closePopup,state} = props;
     const classes = useStyles();
@@ -55,3 +57,14 @@ export default function StatusMessage(props) {
       </div>
     )
 }
+
+const mapStateToProps = (state) => ({
+  state,
+});
+
+
+const mapDispatchToProps={
+  closePopup
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(StatusMessage);

@@ -85,7 +85,7 @@ function People(props) {
 
   return (
     <Box mt={8}>
-      <StatusMessage closePopup={closePopup} state={state} />
+      <StatusMessage/>
       <Box className={classes.people_position}>
         <Grid className={classes.main_block}>
           {props.buttonCreate ? (

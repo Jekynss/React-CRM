@@ -1,11 +1,21 @@
 import React from 'react'
-import TextField from "@material-ui/core/TextField";
+import {TextValidator} from 'react-material-ui-form-validator';
 
 export default function PasswordInput(props) {
     const {user, handleChange} = props;
+
     return (
         <div>
-            <TextField id="Password" type="password" value={user.password} onChange={handleChange} name='password' label="Password" />
+            <TextValidator
+                    id="Password"
+                    label="Password"
+                    type="password"
+                    onChange={handleChange}
+                    name="password"
+                    value={user.password}
+                    validators={['required']}
+                    errorMessages={['this field is required']}
+                />
         </div>
     )
 }

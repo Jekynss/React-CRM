@@ -1,5 +1,4 @@
-import React,{Fragment} from 'react'
-import TextField from "@material-ui/core/TextField";
+import React from 'react'
 import {TextValidator} from 'react-material-ui-form-validator';
 
 export default function EmailInput(props) {

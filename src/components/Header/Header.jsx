@@ -10,6 +10,8 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import Paper from "@material-ui/core/Paper";
 import { Link } from "react-router-dom";
 import Box from "@material-ui/core/Box";
+import { connect } from "react-redux";
+import {setToken} from '../../redux/actions/CardsAction'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,9 +40,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Header(props) {
+function Header(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const {token,setToken} = props;
   const open = Boolean(anchorEl);
 
   const handleMenu = (event) => {
@@ -51,17 +54,22 @@ export default function Header(props) {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    setAnchorEl(null);
+    setToken('');
+  }
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <AppBar position="static">
-          <Toolbar>
+        {token &&<Toolbar>
             <Grid
               container
               direction="row"
               justify="space-between"
               align="center"
-            >
+            > 
               <IconButton
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
@@ -88,7 +96,7 @@ export default function Header(props) {
               >
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem
-                  onClick={handleClose}
+                  onClick={handleLogout}
                   className={classes.logout_button}
                 >
                   Logout
@@ -108,14 +116,24 @@ export default function Header(props) {
                     aria-haspopup="true"
                     className={classes.pages}
                   >
-                    <Link className={classes.link} to={`/${anchor == "Home" ? "" : anchor.toLowerCase()}`}>{anchor}</Link>
+                    <Link className={classes.link} to={`/${anchor === "Home" ? "" : anchor.toLowerCase()}`}>{anchor}</Link>
                   </Box>
                 </Grid>
               ))}
             </Grid>
-          </Toolbar>
+          </Toolbar>}
         </AppBar>
       </Paper>
     </div>
   );
 }
+
+const mapStateToProps = (state) => ({
+  token:state.token,
+});
+
+const mapDispatchToProps = {
+  setToken,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

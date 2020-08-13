@@ -11,12 +11,13 @@ import {connect} from 'react-redux'
 import {setInitialCards} from './redux/actions/CardsAction'
 import Header from './components/Header/Header'
 import RegistrationPage from './pages/RegistrationPage';
+import AuthRoute from './components/AuthRoute/AuthRoute';
 
 function App(props) {
-  const {setInitialCards} = props;
+  const {setInitialCards,token} = props;
   useEffect(() => {
-      Axios.get('http://localhost:3002/api/v1/people').then((res)=>{setInitialCards(res.data)})
-  }, [setInitialCards]);
+      if(token) Axios.get('http://localhost:3002/api/v1/people').then((res)=>{setInitialCards(res.data)});
+  }, [token]);
 
   return (
     <div className="App">
@@ -33,8 +34,11 @@ function App(props) {
   );
 }
 
+const mapStateToProps = (state) => ({
+  token:state.token
+})
 const mapDispatchToProps ={
   setInitialCards
 }
 
-export default connect(undefined,mapDispatchToProps)(App);
+export default connect(mapStateToProps,mapDispatchToProps)(App);
