@@ -58,9 +58,9 @@ export const setLimitPeopleToRedux = (limit) => ({
   limit,
 });
 
-export const setToken = (token) => ({
+export const setToken = (object) => ({
   type: SET_TOKEN,
-  token,
+  payload: object,
 });
 
 export const setRedirect = (link) => ({
@@ -68,11 +68,13 @@ export const setRedirect = (link) => ({
   link,
 });
 
+const token = JSON.parse(localStorage.getItem('user')).token;
+
 export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
     const { data } = await Axios.post(
       `http://localhost:3002/api/v1/people`,
-      card
+      card,{headers:{token:token}}
     );
     dispatch(addCard(data.data));
     data.message
@@ -89,7 +91,7 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
 export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
   try {
     const { data } = await Axios.delete(
-      `http://127.0.0.1:3002/api/v1/people/${card_id}`
+      `http://127.0.0.1:3002/api/v1/people/${card_id}`,{headers:{token:token}}
     );
     dispatch(deleteCard(card_id));
     dispatch(showSuccessPopup(data.message));
@@ -105,7 +107,7 @@ export const asyncUpdateCardRequest = (card) => async (dispatch) => {
   try {
     const { data } = await Axios.put(
       `http://127.0.0.1:3002/api/v1/people/${card.id}`,
-      card
+      card,{headers:{token:token}}
     );
     dispatch(updateCard(card));
     dispatch(showSuccessPopup(data.message));
@@ -137,12 +139,12 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
       `http://127.0.0.1:3002/api/v1/users/login`,
       user
     );
-    dispatch(setToken(data.token));
+    dispatch(setToken(data));
     data.error
       ? dispatch(showErrorPopup(data.msg))
       : dispatch(setRedirect("/"));
   } catch (error) {
-    dispatch(showErrorPopup(`${error.message}: ${error.response.data.msg}`));
+    dispatch(showErrorPopup(`${error.message}: ${error.response?.data.msg}`));
   }
   dispatchDebouncer(closePopup, 3000);
 };

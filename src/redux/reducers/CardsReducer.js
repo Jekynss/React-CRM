@@ -1,4 +1,5 @@
 import * as actions from "../actions/CardsAction";
+import axios from 'axios'
 
 const initialState = {
   cards: [],
@@ -71,7 +72,8 @@ export default function CardReducer(state = initialState, action) {
     }
 
     case actions.SET_TOKEN: {
-      return { ...state, token:action.token};
+      localStorage.setItem('user', JSON.stringify({...action.payload.user,token:action.payload.token}));
+      return { ...state, token:action.payload.token};
     }
 
     case actions.SET_REDIRECT: {

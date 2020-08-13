@@ -5,14 +5,12 @@ import AuthorizationForm from "../AuthorizationForm/AuthorizationForm";
 import { connect } from "react-redux";
 import {asyncAuthorizeUser} from '../../redux/actions/CardsAction'
 import StatusMessage from "../StatusMessage/StatusMessage";
-import { Redirect } from "react-router";
 
 function LoginForm(props) {
   const [user, setUser] = useState({ email: "", password: "" });
-  const {redirectLink,asyncAuthorizeUser,token} = props;
+  const {asyncAuthorizeUser,token} = props;
 
   const handleSubmit = (e) => {
-    console.log(user);
     asyncAuthorizeUser(user);
   };
 
@@ -23,8 +21,6 @@ function LoginForm(props) {
   return (
     <>
     <StatusMessage/>
-      {redirectLink && <Redirect push to={redirectLink} />}
-      { token && <Redirect push to={'/'} />}
       <AuthorizationForm name="Login" handleSubmit={handleSubmit} secondLink="Registration">
           <EmailLoginInput user={user} handleChange={handleChange} />
           <PasswordInput user={user} handleChange={handleChange} />
@@ -33,13 +29,8 @@ function LoginForm(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  redirectLink:state.redirectLink,
-  token:state.token,
-});
-
 const mapDispatchToProps = {
   asyncAuthorizeUser
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginForm);
+export default connect(null, mapDispatchToProps)(LoginForm);

@@ -8,27 +8,27 @@ import PeoplePage from './pages/PeoplePage';
 import { Switch, Route } from "react-router-dom";
 import Axios from "axios";
 import {connect} from 'react-redux'
-import {setInitialCards} from './redux/actions/CardsAction'
+import {setInitialCards,setToken} from './redux/actions/CardsAction'
 import Header from './components/Header/Header'
 import RegistrationPage from './pages/RegistrationPage';
 import AuthRoute from './components/AuthRoute/AuthRoute';
 
 function App(props) {
-  const {setInitialCards,token} = props;
+  const {setInitialCards,token,setToken} = props;
   useEffect(() => {
-      if(token) Axios.get('http://localhost:3002/api/v1/people').then((res)=>{setInitialCards(res.data)});
+      if(token) Axios.get('http://localhost:3002/api/v1/people',{headers:{token:token}}).then((res)=>{setInitialCards(res.data)});
   }, [token]);
 
   return (
     <div className="App">
       <Header/>
       <Switch>
-        <Route exact path="/login" component={LoginPage} />
-        <Route exact path="/registration" component={RegistrationPage} />
-        <Route exact path="/" component={HomePage} />
-        <Route exact path="/people" component={PeoplePage}/>
-        <Route exact path="/projects" component={ProjectsPage}/>
-        <Route path="/people/:id" component={ProfilePage} />
+        <AuthRoute exact path="/login" type="guest"><LoginPage/></AuthRoute>
+        <AuthRoute exact path="/registration" type="guest"><RegistrationPage/></AuthRoute>
+        <AuthRoute exact path="/" type="private"><HomePage/></AuthRoute>
+        <AuthRoute exact path="/people" type="private"><PeoplePage/></AuthRoute>
+        <AuthRoute exact path="/projects" type="private"><ProjectsPage/></AuthRoute>
+        <AuthRoute path="/people/:id" type="private" render={(props) => <ProfilePage {...props} />}></AuthRoute>
       </Switch>
     </div>
   );
@@ -38,7 +38,8 @@ const mapStateToProps = (state) => ({
   token:state.token
 })
 const mapDispatchToProps ={
-  setInitialCards
+  setInitialCards,
+  setToken,
 }
 
 export default connect(mapStateToProps,mapDispatchToProps)(App);

@@ -56,7 +56,7 @@ function Header(props) {
 
   const handleLogout = () => {
     setAnchorEl(null);
-    setToken('');
+    setToken({token:''});
   }
 
   return (

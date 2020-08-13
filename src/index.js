@@ -7,9 +7,16 @@ import App from './App';
 import reducer from './redux/reducers/CardsReducer'
 import { BrowserRouter} from "react-router-dom";
 import { composeWithDevTools } from 'redux-devtools-extension';
+import {setToken} from './redux/actions/CardsAction'
 
 const store = createStore(reducer, composeWithDevTools(applyMiddleware(thunk)));
+
 export const dispatch = store.dispatch; 
+
+const localToken = JSON.parse(localStorage.getItem('user')).token;
+if(localToken)
+dispatch(setToken({token:localToken}))
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
