@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { dispatchDebouncer } from "../../components/utils";
+import { dispatchDebouncer,getCurentToken } from "../../components/utils";
 
 export const ADD_CARD = "ADD_CARD";
 export const DELETE_CARD = "DELETE_CARD";
@@ -68,10 +68,9 @@ export const setRedirect = (link) => ({
   link,
 });
 
-const token = JSON.parse(localStorage.getItem('user')).token;
-
 export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
+    const token=getCurentToken();
     const { data } = await Axios.post(
       `http://localhost:3002/api/v1/people`,
       card,{headers:{token:token}}
@@ -90,6 +89,7 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
 
 export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
   try {
+    const token=getCurentToken();
     const { data } = await Axios.delete(
       `http://127.0.0.1:3002/api/v1/people/${card_id}`,{headers:{token:token}}
     );
@@ -105,6 +105,7 @@ export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
 
 export const asyncUpdateCardRequest = (card) => async (dispatch) => {
   try {
+    const token=getCurentToken();
     const { data } = await Axios.put(
       `http://127.0.0.1:3002/api/v1/people/${card.id}`,
       card,{headers:{token:token}}
@@ -125,10 +126,10 @@ export const asyncRegisterUser = (user) => async (dispatch) => {
       `http://127.0.0.1:3002/api/v1/users/registration`,
       user
     );
-    dispatch(showSuccessPopup(data.msg));
+    dispatch(showSuccessPopup(data.message));
     dispatch(setRedirect("/login"));
   } catch (error) {
-    dispatch(showErrorPopup(`${error.message}: ${error.response.data.msg}`));
+    dispatch(showErrorPopup(`${error.message}: ${error.response.data.message}`));
   }
   dispatchDebouncer(closePopup, 3000);
 };
@@ -141,10 +142,10 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
     );
     dispatch(setToken(data));
     data.error
-      ? dispatch(showErrorPopup(data.msg))
+      ? dispatch(showErrorPopup(data.message))
       : dispatch(setRedirect("/"));
   } catch (error) {
-    dispatch(showErrorPopup(`${error.message}: ${error.response?.data.msg}`));
+    dispatch(showErrorPopup(`${error.message}: ${error.response?.data.message}`));
   }
   dispatchDebouncer(closePopup, 3000);
 };

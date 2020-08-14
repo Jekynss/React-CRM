@@ -12,7 +12,8 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     backgroundImage: 'url(https://images.unsplash.com/photo-1568992687947-868a62a9f521?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1489&q=80)',
     height:'500px',
-    backgroundAttachment: 'fixed'
+    backgroundAttachment: 'fixed',
+    backgroundSize: 'cover'
   },
 }));
 

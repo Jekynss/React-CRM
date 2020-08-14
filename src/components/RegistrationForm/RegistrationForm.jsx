@@ -33,7 +33,7 @@ function RegistrationForm(props) {
     <AuthorizationForm name="Registration" handleSubmit={handleSubmit} secondLink="Login">
       <FullNameInput obj={user} handleChange={handleChange} classes={classes} />
       <EmailInput obj={user} handleChange={handleChange} classes={classes} />
-      <PasswordInput user={user} handleChange={handleChange} />
+      <PasswordInput user={user} handleChange={handleChange} limitLength />
     </AuthorizationForm>
     </>
   );

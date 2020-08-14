@@ -2,7 +2,7 @@ import React from 'react'
 import {TextValidator} from 'react-material-ui-form-validator';
 
 export default function PasswordInput(props) {
-    const {user, handleChange} = props;
+    const {user, handleChange, limitLength} = props;
 
     return (
         <div>
@@ -14,6 +14,7 @@ export default function PasswordInput(props) {
                     name="password"
                     value={user.password}
                     validators={['required']}
+                    inputProps={ limitLength ? { minlength:"3"}:{}}
                     errorMessages={['this field is required']}
                 />
         </div>
