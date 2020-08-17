@@ -17,8 +17,8 @@ export default function DevelopersCell(props) {
   const classes = useStyles();
   return (
     <>
-      {developers.map((elem) => (
-        <Box component="span" mx={1}>
+      {developers?.map((elem) =>(
+        <Box component="span" mx={1} key={`${elem.id}`}>
           <Link to={`/people/${elem.id}`}>
             <CardMedia
               component="img"

@@ -13,6 +13,7 @@ export const SET_LIMIT_PEOPLE = "SET_LIMIT_PEOPLE";
 
 export const SET_TOKEN = "SET_TOKEN";
 export const SET_REDIRECT = "SET_REDIRECT";
+export const SET_PROJECTS = "SET_PROJECTS";
 
 export const addCard = (card) => ({
   type: ADD_CARD,
@@ -67,6 +68,12 @@ export const setRedirect = (link) => ({
   type: SET_REDIRECT,
   link,
 });
+
+export const setProjects = (projects) => ({
+  type: SET_PROJECTS,
+  payload: projects,
+});
+
 
 export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
@@ -149,3 +156,26 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
   }
   dispatchDebouncer(closePopup, 3000);
 };
+
+export const asyncSetProjects = () => async (dispatch)=> {
+  try {
+    const token=getCurentToken();
+    const {data} = await Axios.get("http://localhost:3002/api/v1/projects", {
+      headers: { token },
+    });
+    dispatch(setProjects(data));
+  } catch (err) {
+    console.log(err);
+  }
+} 
+
+export const asyncDeleteProject = (id) => async (dispatch)=> {
+  try {
+    const token=getCurentToken();
+    await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
+      headers: { token },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+} 

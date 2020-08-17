@@ -9,8 +9,8 @@ const useStyles = makeStyles({
         height:20,
     },
     medium:{
-        width:20,
-        height:20,
+        width:120,
+        height:40,
     },
     active:{
       color:'blue',

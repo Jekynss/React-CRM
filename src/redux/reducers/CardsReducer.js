@@ -1,5 +1,4 @@
 import * as actions from "../actions/CardsAction";
-import axios from 'axios'
 
 const initialState = {
   cards: [],
@@ -7,7 +6,8 @@ const initialState = {
   message:'',
   limitHome:4,
   limitPeople:12,
-  token:''
+  token:'',
+  projects:[],
 };
 
 export default function CardReducer(state = initialState, action) {
@@ -78,6 +78,10 @@ export default function CardReducer(state = initialState, action) {
 
     case actions.SET_REDIRECT: {
       return { ...state, redirectLink:action.link};
+    }
+
+    case actions.SET_PROJECTS:{
+      return { ...state, projects:action.payload};
     }
 
     default:

@@ -5,7 +5,7 @@ const StackCell = (props) => {
     const {stacks} = props;
     return (
         <>
-         {stacks.map((elem)=>(<StackBadge name={elem}/>))}   
+         {stacks?.map((elem)=>(<StackBadge key={elem} name={elem}/>))}   
         </>
     )
 }
