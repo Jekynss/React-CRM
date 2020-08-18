@@ -32,7 +32,6 @@ const useStyles = makeStyles({
 const StatusBadge = (props) => {
     const { status, size } = props;
     const classes = useStyles();
-
     const statusClass = clsx({
         [classes.active]: status.toLowerCase() === 'active',
         [classes.pending]: status.toLowerCase() === 'pending',

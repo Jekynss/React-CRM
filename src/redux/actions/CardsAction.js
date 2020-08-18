@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { dispatchDebouncer,getCurentToken } from "../../components/utils";
+import { dispatchDebouncer, getCurentToken } from "../../components/utils";
 
 export const ADD_CARD = "ADD_CARD";
 export const DELETE_CARD = "DELETE_CARD";
@@ -74,13 +74,13 @@ export const setProjects = (projects) => ({
   payload: projects,
 });
 
-
 export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
-    const token=getCurentToken();
+    const token = getCurentToken();
     const { data } = await Axios.post(
       `http://localhost:3002/api/v1/people`,
-      card,{headers:{token:token}}
+      card,
+      { headers: { token: token } }
     );
     dispatch(addCard(data.data));
     data.message
@@ -96,9 +96,12 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
 
 export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
   try {
-    const token=getCurentToken();
+    const token = getCurentToken();
     const { data } = await Axios.delete(
-      `http://127.0.0.1:3002/api/v1/people/${card_id}`,{headers:{token:token}}
+      `http://127.0.0.1:3002/api/v1/people/${card_id}`,
+      {
+        headers: { token: token },
+      }
     );
     dispatch(deleteCard(card_id));
     dispatch(showSuccessPopup(data.message));
@@ -112,10 +115,13 @@ export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
 
 export const asyncUpdateCardRequest = (card) => async (dispatch) => {
   try {
-    const token=getCurentToken();
-    const { data } = await Axios.put(
+    const token = getCurentToken();
+    const {
+      data,
+    } = await Axios.put(
       `http://127.0.0.1:3002/api/v1/people/${card.id}`,
-      card,{headers:{token:token}}
+      card,
+      { headers: { token: token } }
     );
     dispatch(updateCard(card));
     dispatch(showSuccessPopup(data.message));
@@ -136,7 +142,9 @@ export const asyncRegisterUser = (user) => async (dispatch) => {
     dispatch(showSuccessPopup(data.message));
     dispatch(setRedirect("/login"));
   } catch (error) {
-    dispatch(showErrorPopup(`${error.message}: ${error.response.data.message}`));
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
   }
   dispatchDebouncer(closePopup, 3000);
 };
@@ -152,30 +160,44 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
       ? dispatch(showErrorPopup(data.message))
       : dispatch(setRedirect("/"));
   } catch (error) {
-    dispatch(showErrorPopup(`${error.message}: ${error.response?.data.message}`));
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response?.data.message}`)
+    );
   }
   dispatchDebouncer(closePopup, 3000);
 };
 
-export const asyncSetProjects = () => async (dispatch)=> {
+export const asyncSetProjects = () => async (dispatch) => {
   try {
-    const token=getCurentToken();
-    const {data} = await Axios.get("http://localhost:3002/api/v1/projects", {
+    const token = getCurentToken();
+    const { data } = await Axios.get("http://localhost:3002/api/v1/projects", {
       headers: { token },
     });
     dispatch(setProjects(data));
   } catch (err) {
     console.log(err);
   }
-} 
+};
 
-export const asyncDeleteProject = (id) => async (dispatch)=> {
+export const asyncDeleteProject = (id) => async (dispatch) => {
   try {
-    const token=getCurentToken();
+    const token = getCurentToken();
     await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
       headers: { token },
     });
   } catch (err) {
     console.log(err);
   }
-} 
+};
+
+export const asyncAddProject = (payload) => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const {data} = await Axios.post(`http://localhost:3002/api/v1/projects`, payload.project, {
+      headers: { token: token },
+    });
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};

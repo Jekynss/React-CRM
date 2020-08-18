@@ -1,9 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
@@ -18,20 +14,19 @@ import { connect } from "react-redux";
 import {
   asyncSetProjects,
   asyncDeleteProject,
+  asyncAddProject,
 } from "../../redux/actions/CardsAction";
-import AutoComplete from "@material-ui/lab/Autocomplete";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import ListItemText from "@material-ui/core/ListItemText";
 import Select from "@material-ui/core/Select";
-import Checkbox from "@material-ui/core/Checkbox";
 import Chip from "@material-ui/core/Chip";
 
 const useStyles = makeStyles({
-  'MuiTableCell-root':{
-    background:'red',
+  "MuiTableCell-root": {
+    background: "red",
   },
   table: {
     minWidth: 650,
@@ -47,20 +42,30 @@ const useStyles = makeStyles({
   formControl: {
     minWidth: 120,
     maxWidth: 300,
-    verticalAlign: 'center'
+    verticalAlign: "center",
   },
   chips: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    display: "flex",
+    flexWrap: "wrap",
   },
   chip: {
     margin: 2,
+  },
+  form_input: {
+    textAlign: "center",
   },
 });
 
 function ProjectsTable(props) {
   const classes = useStyles();
-  const { token, reduxProjects, asyncSetProjects, asyncDeleteProject, developers} = props;
+  const {
+    token,
+    reduxProjects,
+    asyncSetProjects,
+    asyncDeleteProject,
+    developers,
+    asyncAddProject,
+  } = props;
 
   const [personName, setPersonName] = React.useState([]);
   const [developersName, setDevelopersName] = React.useState([]);
@@ -75,6 +80,8 @@ function ProjectsTable(props) {
 
   const names = [
     "Node",
+    "JavaScript",
+    "HTML",
     "React",
     "Postgres",
     "mongoDB",
@@ -82,8 +89,8 @@ function ProjectsTable(props) {
     "PHP",
     "Composer",
     "Docker",
+    "Git",
   ];
-
 
   useEffect(() => {
     if (token && reduxProjects.length == 0) {
@@ -99,7 +106,12 @@ function ProjectsTable(props) {
       {
         title: "Status",
         field: "status",
-        lookup: { 0: "active", 1: "pending", 2: "failed", 3: "completed" },
+        lookup: {
+          active: <StatusBadge status="active" size="md" />,
+          pending: <StatusBadge status="pending" size="md" />,
+          failed: <StatusBadge status="failed" size="md" />,
+          completed: <StatusBadge status="completed" size="md" />,
+        },
       },
       { title: "Stack", field: "stack", multiplySelectStack: true },
       {
@@ -116,15 +128,19 @@ function ProjectsTable(props) {
     data: setRowsByArray(reduxProjects),
   });
 
+  function elementToRow(element) {
+    return {
+      id: element.id,
+      name: element.name,
+      status: element.status,
+      stack: <StackCell stacks={element.stack} />,
+      price: `${element.price}$`,
+      developers: <DevelopersCell developers={element.profiles} />,
+    };
+  }
+
   function setRowsByArray(projects) {
-    return projects.map((elem) => ({
-      id: elem.id,
-      name: elem.name,
-      status: <StatusBadge status={elem.status} size="md" />,
-      stack: <StackCell stacks={elem.stack} />,
-      price: `${elem.price}$`,
-      developers: <DevelopersCell developers={elem.profiles} />,
-    }));
+    return projects.map((elem) => elementToRow(elem));
   }
 
   return (
@@ -139,76 +155,82 @@ function ProjectsTable(props) {
           } = fieldProps;
           if (multiplySelectStack) {
             return (
-              <Box>
-              <FormControl className={classes.formControl}>
-                <InputLabel id="input_stack" className={classes.formControl}>Stack</InputLabel>
-                <Select
-                  id="input_stack__select"
-                  multiple
-                  value={personName}
-                  onChange={handleChange}
-                  input={<Input id="select-multiple-chip" />}
-                  className={classes.formControl}
-                  renderValue={(selected) => (
-                    <div className={classes.chips}>
-                      {selected.map((value) => (
-                        <Chip
-                          key={value}
-                          label={value}
-                          className={classes.chip}
-                        />
-                      ))}
-                    </div>
-                  )}
-                >
-                  {names.map((name) => (
-                    <MenuItem key={name} value={name}>
-                      {name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Box className={classes.form_input}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="input_stack" className={classes.formControl}>
+                    Stack
+                  </InputLabel>
+                  <Select
+                    id="input_stack__select"
+                    multiple
+                    value={personName}
+                    onChange={handleChange}
+                    input={<Input id="select-multiple-chip" />}
+                    className={classes.formControl}
+                    renderValue={(selected) => (
+                      <div className={classes.chips}>
+                        {selected.map((value) => (
+                          <Chip
+                            key={value}
+                            label={value}
+                            className={classes.chip}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  >
+                    {names.map((name) => (
+                      <MenuItem key={name} value={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Box>
             );
           } else if (multiplySelectDevs) {
             return (
-              <Box>
-              <FormControl className={classes.formControl}>
-                <InputLabel id="input_devs">Developers</InputLabel>
-                <Select
-                  id="input_devs__select"
-                  multiple
-                  value={developersName}
-                  onChange={handleChangeDevs}
-                  className={classes.formControl}
-                  input={<Input />}
-                  renderValue={(selected) => selected.join(", ")}
-                >
-                  {developers.map((developer) => (
-                    <MenuItem key={developer.id} value={`${developer.name}(${developer.id})`}>
-                      <Box component="span" mx={2}>
-                        <CardMedia
-                          component="img"
-                          alt="Contemplative Reptile"
-                          height="30"
-                          image={developer.image_url}
-                          title="Contemplative Reptile"
-                          className={classes.image}
-                        />
-                      </Box>
-                      <ListItemText primary={developer.name} />
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <Box className={classes.form_input}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="input_devs">Developers</InputLabel>
+                  <Select
+                    id="input_devs__select"
+                    multiple
+                    value={developersName}
+                    onChange={handleChangeDevs}
+                    className={classes.formControl}
+                    input={<Input />}
+                    renderValue={(selected) => (selected.join(", "))}
+                  >
+                    {developers.map((developer) => (
+                      <MenuItem
+                        key={developer.id}
+                        value={`${developer.id}`}
+                      >
+                        <Box component="span" mx={2}>
+                          <CardMedia
+                            component="img"
+                            alt="Contemplative Reptile"
+                            height="30"
+                            image={developer.image_url}
+                            title="Contemplative Reptile"
+                            className={classes.image}
+                          />
+                        </Box>
+                        <ListItemText primary={developer.name} />
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Box>
             );
           } else {
             return (
-              <Box>
-              <MTableEditField className={classes.formControl}
-                {...{ ...fieldProps, value: fieldProps.value || "" }}
-              />
+              <Box mt="19px" className={classes.form_input}>
+                <MTableEditField
+                  className={classes.formControl}
+                  {...{ ...fieldProps, value: fieldProps.value || "" }}
+                />
               </Box>
             );
           }
@@ -218,10 +240,9 @@ function ProjectsTable(props) {
         actionsColumnIndex: -1,
         cellStyle: {
           textAlign: "center",
-          verticalAlign: 'center',
+          verticalAlign: "center",
         },
-        rowStyle:{
-        },
+        rowStyle: {},
         headerStyle: {
           textAlign: "center",
         },
@@ -230,12 +251,19 @@ function ProjectsTable(props) {
       editable={{
         onRowAdd: (newData) =>
           new Promise((resolve) => {
-            setTimeout(() => {
+            setTimeout(async () => {
+              const { data } = await asyncAddProject({
+                project: {
+                  ...newData,
+                  stack: personName,
+                  developers: developersName,
+                },
+              });
+              await asyncSetProjects();
               resolve();
               setTable((prevState) => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
+                const res = [...prevState.data, elementToRow(data)];
+                return { ...prevState, data: res };
               });
             }, 600);
           }),
@@ -265,6 +293,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   asyncSetProjects,
   asyncDeleteProject,
+  asyncAddProject,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProjectsTable);

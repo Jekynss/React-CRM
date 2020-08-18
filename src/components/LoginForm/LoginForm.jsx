@@ -8,7 +8,7 @@ import StatusMessage from "../StatusMessage/StatusMessage";
 
 function LoginForm(props) {
   const [user, setUser] = useState({ email: "", password: "" });
-  const {asyncAuthorizeUser,token} = props;
+  const {asyncAuthorizeUser} = props;
 
   const handleSubmit = (e) => {
     asyncAuthorizeUser(user);
