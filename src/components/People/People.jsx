@@ -121,6 +121,7 @@ function People(props) {
               ))}
               <DeleteModal
                 open={open}
+                text="Are you sure you want to delete this profile?"
                 handleCloseModal={handleCloseModal}
                 handleClickDelete={handleClickDelete}
               />

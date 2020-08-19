@@ -152,14 +152,14 @@ function ProjectsTable(props) {
                 options={stackNames}
                 onChange={(e,val)=>{setPersonName(val)}}
                 getOptionLabel={(option) => option}
-                renderInput={(params) => {console.log(params);return(
+                renderInput={(params) => (
                   <TextField
                     {...params}
                     variant="standard"
                     label="Stack"
                     placeholder="Stack"
                   />
-                )}}
+                )}
               />
               );
             } else if (multiplySelectDevs) {
