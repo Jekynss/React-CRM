@@ -25,7 +25,7 @@ export default function DevelopersCell(props) {
               alt="Contemplative Reptile"
               height="30"
               image={elem.image_url}
-              title="Contemplative Reptile"
+              title={elem.name}
               className={classes.image}
             />
           </Link>

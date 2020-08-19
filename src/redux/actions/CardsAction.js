@@ -179,7 +179,7 @@ export const asyncSetProjects = () => async (dispatch) => {
   }
 };
 
-export const asyncDeleteProject = (id) => async (dispatch) => {
+export const asyncDeleteProject = (id) => async () => {
   try {
     const token = getCurentToken();
     await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
@@ -190,7 +190,7 @@ export const asyncDeleteProject = (id) => async (dispatch) => {
   }
 };
 
-export const asyncAddProject = (payload) => async (dispatch) => {
+export const asyncAddProject = (payload) => async () => {
   try {
     const token = getCurentToken();
     const {data} = await Axios.post(`http://localhost:3002/api/v1/projects`, payload.project, {
@@ -201,3 +201,16 @@ export const asyncAddProject = (payload) => async (dispatch) => {
     console.log(err);
   }
 };
+
+export const asyncGetProjects = (id) => async () => {
+  try {
+    const token = getCurentToken();
+    const {data} = await Axios.get(`http://localhost:3002/api/v1/people/${id}/projects`, {
+      headers: { token: token },
+    });
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+

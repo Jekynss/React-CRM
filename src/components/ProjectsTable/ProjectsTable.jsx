@@ -5,7 +5,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import clsx from "classnames/bind";
 import StatusBadge from "../StatusBadge/StatusBadge";
-import { Box, CardMedia } from "@material-ui/core";
+import { Box, CardMedia, TextField } from "@material-ui/core";
 import MaterialTable, { MTableEditField } from "material-table";
 import StackCell from "../StackCell/StackCell";
 import DevelopersCell from "../DevelopersCell/DevelopersCell";
@@ -23,15 +23,11 @@ import FormControl from "@material-ui/core/FormControl";
 import ListItemText from "@material-ui/core/ListItemText";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles({
   "MuiTableCell-root": {
     background: "red",
-  },
-  table: {
-    minWidth: 650,
-    height: 950,
-    width: "100%",
   },
   image: {
     width: "30px",
@@ -70,15 +66,11 @@ function ProjectsTable(props) {
   const [personName, setPersonName] = React.useState([]);
   const [developersName, setDevelopersName] = React.useState([]);
 
-  const handleChange = (event) => {
-    setPersonName(event.target.value);
-  };
-
-  const handleChangeDevs = (event) => {
-    setDevelopersName(event.target.value);
-  };
-
-  const names = [
+  const clearState=()=>{
+    setPersonName([]);
+    setDevelopersName([]);
+  }
+  const stackNames = [
     "Node",
     "JavaScript",
     "HTML",
@@ -93,11 +85,7 @@ function ProjectsTable(props) {
   ];
 
   useEffect(() => {
-    if (token && reduxProjects.length == 0) {
-      asyncSetProjects();
-    } else {
-      setTable({ ...table, data: setRowsByArray(reduxProjects) });
-    }
+    setTable({ ...table, data: setRowsByArray(reduxProjects) });
   }, [token, reduxProjects]);
 
   const [table, setTable] = React.useState({
@@ -144,143 +132,118 @@ function ProjectsTable(props) {
   }
 
   return (
-    <MaterialTable
-      title="Projects Table"
-      columns={table.columns}
-      data={table.data}
-      components={{
-        EditField: (fieldProps) => {
-          const {
-            columnDef: { multiplySelectStack, multiplySelectDevs },
-          } = fieldProps;
-          if (multiplySelectStack) {
-            return (
-              <Box className={classes.form_input}>
-                <FormControl className={classes.formControl}>
-                  <InputLabel id="input_stack" className={classes.formControl}>
-                    Stack
-                  </InputLabel>
-                  <Select
-                    id="input_stack__select"
-                    multiple
-                    value={personName}
-                    onChange={handleChange}
-                    input={<Input id="select-multiple-chip" />}
+    <Box width="80%" mx="auto">
+      <MaterialTable
+        className={classes.table}
+        title="Projects Table"
+        columns={table.columns}
+        data={table.data}
+        components={{
+          EditField: (fieldProps) => {
+            const {
+              columnDef: { multiplySelectStack, multiplySelectDevs },
+            } = fieldProps;
+            if (multiplySelectStack) {
+              return (
+                <Autocomplete
+                multiple
+                id="tags-standard"
+                value={personName}
+                options={stackNames}
+                onChange={(e,val)=>{setPersonName(val)}}
+                getOptionLabel={(option) => option}
+                renderInput={(params) => {console.log(params);return(
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Stack"
+                    placeholder="Stack"
+                  />
+                )}}
+              />
+              );
+            } else if (multiplySelectDevs) {
+              return (
+                <Autocomplete
+                multiple
+                id="tags-standard"
+                value={developersName}
+                options={developers}
+                onChange={(e,val)=>{setDevelopersName(val)}}
+                getOptionLabel={(option) => option.name}
+                renderOption={(option, { selected }) => (
+                  <>
+                          <Box component="span" mx={2}>
+                            <CardMedia
+                              component="img"
+                              alt="Contemplative Reptile"
+                              height="30"
+                              image={option.image_url}
+                              title="Contemplative Reptile"
+                              className={classes.image}
+                            />
+                          </Box>
+                          <ListItemText primary={option.name} />
+                  </>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    label="Developers"
+                    placeholder="Developers"
+                  />
+                )}
+              />
+              );
+            } else {
+              return (
+                <Box mt="19px" className={classes.form_input}>
+                  <MTableEditField
                     className={classes.formControl}
-                    renderValue={(selected) => (
-                      <div className={classes.chips}>
-                        {selected.map((value) => (
-                          <Chip
-                            key={value}
-                            label={value}
-                            className={classes.chip}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  >
-                    {names.map((name) => (
-                      <MenuItem key={name} value={name}>
-                        {name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            );
-          } else if (multiplySelectDevs) {
-            return (
-              <Box className={classes.form_input}>
-                <FormControl className={classes.formControl}>
-                  <InputLabel id="input_devs">Developers</InputLabel>
-                  <Select
-                    id="input_devs__select"
-                    multiple
-                    value={developersName}
-                    onChange={handleChangeDevs}
-                    className={classes.formControl}
-                    input={<Input />}
-                    renderValue={(selected) => (selected.join(", "))}
-                  >
-                    {developers.map((developer) => (
-                      <MenuItem
-                        key={developer.id}
-                        value={`${developer.id}`}
-                      >
-                        <Box component="span" mx={2}>
-                          <CardMedia
-                            component="img"
-                            alt="Contemplative Reptile"
-                            height="30"
-                            image={developer.image_url}
-                            title="Contemplative Reptile"
-                            className={classes.image}
-                          />
-                        </Box>
-                        <ListItemText primary={developer.name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            );
-          } else {
-            return (
-              <Box mt="19px" className={classes.form_input}>
-                <MTableEditField
-                  className={classes.formControl}
-                  {...{ ...fieldProps, value: fieldProps.value || "" }}
-                />
-              </Box>
-            );
-          }
-        },
-      }}
-      options={{
-        actionsColumnIndex: -1,
-        cellStyle: {
-          textAlign: "center",
-          verticalAlign: "center",
-        },
-        rowStyle: {},
-        headerStyle: {
-          textAlign: "center",
-        },
-      }}
-      align="center"
-      editable={{
-        onRowAdd: (newData) =>
-          new Promise((resolve) => {
-            setTimeout(async () => {
-              const { data } = await asyncAddProject({
+                    {...{ ...fieldProps, value: fieldProps.value || "" }}
+                  />
+                </Box>
+              );
+            }
+          },
+        }}
+        options={{
+          actionsColumnIndex: -1,
+          cellStyle: {
+            textAlign: "center",
+            verticalAlign: "center",
+          },
+          rowStyle: (rowData) => {},
+          headerStyle: {
+            textAlign: "center",
+          },
+        }}
+        align="center"
+        editable={{
+          onRowAdd: (newData) =>
+            new Promise(async (resolve) => {
+              const developersIds = developersName.map((elem) => elem.id);
+              await asyncAddProject({
                 project: {
                   ...newData,
                   stack: personName,
-                  developers: developersName,
+                  developers: developersIds,
                 },
               });
               await asyncSetProjects();
+              clearState();
               resolve();
-              setTable((prevState) => {
-                const res = [...prevState.data, elementToRow(data)];
-                return { ...prevState, data: res };
-              });
-            }, 600);
-          }),
-        onRowDelete: (oldData) =>
-          new Promise((resolve) => {
-            setTimeout(async () => {
+            }),
+          onRowDelete: (oldData) =>
+            new Promise(async (resolve) => {
               await asyncDeleteProject(oldData.id);
-              setTable((prevState) => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
+              await asyncSetProjects();
               resolve();
-            }, 600);
-          }),
-      }}
-    />
+            }),
+        }}
+      />
+    </Box>
   );
 }
 
