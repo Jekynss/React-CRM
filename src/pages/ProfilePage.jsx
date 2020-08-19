@@ -21,6 +21,8 @@ import StatusMessage from "../components/StatusMessage/StatusMessage";
 import DeleteModal from "../components/DeleteModal/DeleteModal";
 import { useHistory } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
+import ProjectsBadgesSection from "../components/ProjectsBadgesSection/ProjectsBadgesSection";
+import SkillsSection from "../components/SkillsSection/SkillsSection";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
   about_text: {
     width: "100%",
-    margin: "10% auto",
+    margin: "10% 0 auto",
   },
   upload_button: {
     width: "100%",
@@ -67,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
   },
   buttonsPanel: {
     flexWrap: "nowrap",
-    width:'fit-content'
+    width: "fit-content",
   },
   inputText: {
     width: "100%",
@@ -114,7 +116,7 @@ function ProfilePage(props) {
     setCard({ ...card, [e.target.name]: e.target.value });
   };
 
-  const handleClickDelete = (e) => {
+  const handleClickDelete = () => {
     setOpenModal(true);
   };
 
@@ -136,7 +138,7 @@ function ProfilePage(props) {
 
   return (
     <div className={classes.profile_section}>
-      <StatusMessage/>
+      <StatusMessage />
       {redirect && <Redirect push to="/" />}
       <ValidatorForm
         onSubmit={handleSubmit}
@@ -172,6 +174,16 @@ function ProfilePage(props) {
           card={card}
           about_text={classes.about_text}
         />
+        {card.id ? (
+          <>
+            <ProjectsBadgesSection id={card.id} />
+            <SkillsSection
+              skills={card.skills}
+              id={card.id}
+              asyncUpdateCardRequest={asyncUpdateCardRequest}
+            />
+          </>
+        ) : null}
         <FormButtons
           wasChanged={wasChanged}
           classes={classes}
@@ -182,6 +194,7 @@ function ProfilePage(props) {
       </ValidatorForm>
       <DeleteModal
         open={openModal}
+        text="Are you sure you want to delete this profile?"
         handleCloseModal={handleCloseModal}
         handleClickDelete={handleClickDeleteModal}
       />

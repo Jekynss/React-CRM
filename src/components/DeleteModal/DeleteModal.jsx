@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 export default function DeleteModal(props) {
-    const {open,handleCloseModal,handleClickDelete} = props;
+    const {open,handleCloseModal,handleClickDelete,text} = props;
     const classes = useStyles();
     return (
         <Modal
@@ -49,7 +49,7 @@ export default function DeleteModal(props) {
           <div className={classes.paper}>
             <h2 id="transition-modal-title">Warning</h2>
             <p id="transition-modal-description">
-              Are you sure you want delete this profile?
+              {text}
             </p>
             <Box m={2} className={classes.modal_buttons}>
               <Button

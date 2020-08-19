@@ -23,7 +23,7 @@ const store = createStore(reducer, enhancer);
 
 export const dispatch = store.dispatch; 
 
-const localToken = JSON.parse(localStorage.getItem('user')).token;
+const localToken = JSON.parse(localStorage.getItem('user'))?.token;
 if(localToken)
 dispatch(setToken({token:localToken}))
 
