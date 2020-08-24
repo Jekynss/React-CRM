@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -8,15 +8,23 @@ import PeoplePage from "./pages/PeoplePage";
 import { Switch, Route } from "react-router-dom";
 import Axios from "axios";
 import { connect } from "react-redux";
-import { setInitialCards, asyncSetProjects } from "./redux/actions/CardsAction";
+import { setInitialCards, asyncSetProjects,getSubscriptionStatus,paidStatus } from "./redux/actions/CardsAction";
 import Header from "./components/Header/Header";
 import RegistrationPage from "./pages/RegistrationPage";
 import AuthRoute from "./components/AuthRoute/AuthRoute";
+import ProjectPage from "./pages/ProjectPage";
+import StripeCheckout from "./pages/StripeCheckout";
 
 function App(props) {
-  const { setInitialCards, token, asyncSetProjects } = props;
+  const { setInitialCards, token, asyncSetProjects,getSubscriptionStatus } = props;
+
+  async function checkPaid(){
+   await getSubscriptionStatus();
+  }
+
   useEffect(() => {
     if (token) {
+      checkPaid();
       Axios.get("http://localhost:3002/api/v1/people", {
         headers: { token: token },
       }).then((res) => {
@@ -33,6 +41,9 @@ function App(props) {
         <AuthRoute exact path="/registration" type="guest">
           <RegistrationPage />
         </AuthRoute>
+        <AuthRoute exact path="/checkout" type="private" statusPaid={'active'}>
+          <StripeCheckout/>
+        </AuthRoute>
         <AuthRoute exact path="/" type="private">
           <HomePage />
         </AuthRoute>
@@ -42,6 +53,11 @@ function App(props) {
         <AuthRoute exact path="/projects" type="private">
           <ProjectsPage />
         </AuthRoute>
+        <AuthRoute
+          path="/projects/:id"
+          type="private"
+          render={(props) => <ProjectPage {...props} />}
+        ></AuthRoute>
         <AuthRoute
           path="/people/:id"
           type="private"
@@ -61,6 +77,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   setInitialCards,
   asyncSetProjects,
+  getSubscriptionStatus,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

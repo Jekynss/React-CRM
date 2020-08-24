@@ -14,7 +14,7 @@ export default function PasswordInput(props) {
                     name="password"
                     value={user.password}
                     validators={['required']}
-                    inputProps={ limitLength ? { minlength:"3"}:{}}
+                    inputProps={ limitLength ? { minLength:"3"}:{}}
                     errorMessages={['this field is required']}
                 />
         </div>

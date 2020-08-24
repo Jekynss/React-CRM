@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { closePopup } from "../redux/actions/CardsAction";
 import Grid from "@material-ui/core/Grid";
 import {
   asyncUpdateCardRequest,
@@ -22,7 +21,7 @@ import DeleteModal from "../components/DeleteModal/DeleteModal";
 import { useHistory } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import ProjectsBadgesSection from "../components/ProjectsBadgesSection/ProjectsBadgesSection";
-import SkillsSection from "../components/SkillsSection/SkillsSection";
+import BadgesSection from "../components/BadgesSection/BadgesSection";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -134,7 +133,7 @@ function ProfilePage(props) {
     const current_id = props.match.params.id;
     const card = state.cards.find((card) => card.id?.toString() === current_id);
     card ? setCard(card) : setCard(cardTemplate);
-  }, [state]);
+  }, [state.cards]);
 
   return (
     <div className={classes.profile_section}>
@@ -177,10 +176,13 @@ function ProfilePage(props) {
         {card.id ? (
           <>
             <ProjectsBadgesSection id={card.id} />
-            <SkillsSection
-              skills={card.skills}
+            <BadgesSection
+              name="Skills"
+              textAlign="left"
+              addable
+              objects={card.skills}
               id={card.id}
-              asyncUpdateCardRequest={asyncUpdateCardRequest}
+              asyncUpdate={asyncUpdateCardRequest}
             />
           </>
         ) : null}

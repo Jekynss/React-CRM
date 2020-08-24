@@ -11,7 +11,7 @@ import Paper from "@material-ui/core/Paper";
 import { Link } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
-import {setToken} from '../../redux/actions/CardsAction'
+import {setToken, paidStatus} from '../../redux/actions/CardsAction'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 function Header(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {token,setToken} = props;
+  const {token,setToken, paidStatus} = props;
   const open = Boolean(anchorEl);
 
   const handleMenu = (event) => {
@@ -62,7 +62,7 @@ function Header(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <AppBar position="static">
+        <AppBar position="fixed">
         {token &&<Toolbar>
             <Grid
               container
@@ -104,7 +104,7 @@ function Header(props) {
               </Menu>
             </Grid>
             <Grid container justify="center" className={classes.navBar}>
-              {["Home", "Projects", "People"].map((anchor,index) => (
+              {paidStatus === "active" ? (["Home", "Projects", "People"].map((anchor,index) => (
                 <Grid
                   item
                   xs={2}
@@ -119,7 +119,7 @@ function Header(props) {
                     <Link className={classes.link} to={`/${anchor === "Home" ? "" : anchor.toLowerCase()}`}>{anchor}</Link>
                   </Box>
                 </Grid>
-              ))}
+              ))):null}
             </Grid>
           </Toolbar>}
         </AppBar>
@@ -130,6 +130,7 @@ function Header(props) {
 
 const mapStateToProps = (state) => ({
   token:state.token,
+  paidStatus:state.paidStatus,
 });
 
 const mapDispatchToProps = {

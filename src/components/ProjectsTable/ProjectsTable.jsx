@@ -24,6 +24,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles({
   "MuiTableCell-root": {
@@ -50,6 +51,10 @@ const useStyles = makeStyles({
   form_input: {
     textAlign: "center",
   },
+  link:{
+    textDecoration:"none",
+    color:'black'
+  }
 });
 
 function ProjectsTable(props) {
@@ -119,7 +124,7 @@ function ProjectsTable(props) {
   function elementToRow(element) {
     return {
       id: element.id,
-      name: element.name,
+      name: <Link to={`/projects/${element.id}`} className={classes.link}>{element.name}</Link>,
       status: element.status,
       stack: <StackCell stacks={element.stack} />,
       price: `${element.price}$`,

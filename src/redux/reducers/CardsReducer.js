@@ -8,6 +8,7 @@ const initialState = {
   limitPeople:12,
   token:'',
   projects:[],
+  paidStatus:'',
 };
 
 export default function CardReducer(state = initialState, action) {
@@ -82,6 +83,10 @@ export default function CardReducer(state = initialState, action) {
 
     case actions.SET_PROJECTS:{
       return { ...state, projects:action.payload};
+    }
+
+    case actions.SET_PAID_STATUS:{
+      return { ...state, paidStatus:action.payload.status};
     }
 
     default:

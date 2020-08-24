@@ -14,6 +14,7 @@ export const SET_LIMIT_PEOPLE = "SET_LIMIT_PEOPLE";
 export const SET_TOKEN = "SET_TOKEN";
 export const SET_REDIRECT = "SET_REDIRECT";
 export const SET_PROJECTS = "SET_PROJECTS";
+export const SET_PAID_STATUS = "PAID_STATUS";
 
 export const addCard = (card) => ({
   type: ADD_CARD,
@@ -72,6 +73,11 @@ export const setRedirect = (link) => ({
 export const setProjects = (projects) => ({
   type: SET_PROJECTS,
   payload: projects,
+});
+
+export const paidStatus = (status) => ({
+  type: SET_PAID_STATUS,
+  payload: { status },
 });
 
 export const asyncAddCardRequest = (card) => async (dispatch) => {
@@ -193,9 +199,13 @@ export const asyncDeleteProject = (id) => async () => {
 export const asyncAddProject = (payload) => async () => {
   try {
     const token = getCurentToken();
-    const {data} = await Axios.post(`http://localhost:3002/api/v1/projects`, payload.project, {
-      headers: { token: token },
-    });
+    const { data } = await Axios.post(
+      `http://localhost:3002/api/v1/projects`,
+      payload.project,
+      {
+        headers: { token: token },
+      }
+    );
     return data;
   } catch (err) {
     console.log(err);
@@ -205,12 +215,83 @@ export const asyncAddProject = (payload) => async () => {
 export const asyncGetProjects = (id) => async () => {
   try {
     const token = getCurentToken();
-    const {data} = await Axios.get(`http://localhost:3002/api/v1/people/${id}/projects`, {
-      headers: { token: token },
-    });
+    const { data } = await Axios.get(
+      `http://localhost:3002/api/v1/people/${id}/projects`,
+      {
+        headers: { token: token },
+      }
+    );
     return data;
   } catch (err) {
     console.log(err);
   }
 };
 
+export const asyncGetProject = (id) => async () => {
+  try {
+    const token = getCurentToken();
+    const { data } = await Axios.get(
+      `http://localhost:3002/api/v1/projects/${id}`,
+      {
+        headers: { token: token },
+      }
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const asyncUpdateProject = (project) => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const { data } = await Axios.put(
+      `http://localhost:3002/api/v1/projects/${project.id}`,
+      project,
+      {
+        headers: { token: token },
+      }
+    );
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+    return data;
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
+  }
+};
+
+export const getSubscriptionStatus = () => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const {
+      data,
+    } = await Axios.get("http://localhost:3002/api/v1/users/getCurrent", {
+      headers: { token: token },
+    });
+    dispatch(paidStatus(data.status));
+  } catch (err) {}
+};
+
+export const asyncSubscribe = (payload) => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const {
+      data,
+    } = await Axios.post(
+      "http://localhost:3002/api/v1/stripe/subscriptions",
+      payload,
+      { headers: { token: token } }
+    );
+
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+    getSubscriptionStatus();
+    return data;
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
+  }
+};
