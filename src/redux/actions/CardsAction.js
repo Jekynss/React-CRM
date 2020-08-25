@@ -185,15 +185,18 @@ export const asyncSetProjects = () => async (dispatch) => {
   }
 };
 
-export const asyncDeleteProject = (id) => async () => {
+export const asyncDeleteProject = (id) => async (dispatch) => {
   try {
     const token = getCurentToken();
-    await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
+    const {data} = await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
       headers: { token },
     });
-  } catch (err) {
-    console.log(err);
-  }
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );}
 };
 
 export const asyncAddProject = (payload) => async () => {

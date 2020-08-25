@@ -133,7 +133,7 @@ function ProjectProfile(props) {
   };
 
   return (
-    <div>
+    <>
       <StatusMessage />
       <ValidatorForm
         onSubmit={handleSubmit}
@@ -215,7 +215,7 @@ function ProjectProfile(props) {
         handleCloseModal={handleCloseModal}
         handleClickDelete={handleClickDeleteModal}
       />
-    </div>
+    </>
   );
 }
 

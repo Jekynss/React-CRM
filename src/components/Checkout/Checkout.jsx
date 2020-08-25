@@ -1,9 +1,10 @@
-import React, { useState,useEffect } from "react";
+import React, { useState } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import "./Checkout.css";
-import Axios from "axios";
 import { connect } from "react-redux";
 import { asyncSubscribe } from "../../redux/actions/CardsAction";
+import PlanCard from "../PlanCard/PlanCard";
+import { Box } from "@material-ui/core";
 
 const CARD_OPTIONS = {
   iconStyle: "solid",
@@ -26,6 +27,9 @@ const CARD_OPTIONS = {
       iconColor: "#ffc7ee",
       color: "#ffc7ee",
     },
+    backButton:{
+      background:"bottom"
+    }
   },
 };
 
@@ -113,6 +117,31 @@ function Checkout(props) {
     name: "",
   });
 
+  const [selectedPlan, setSelectedPlan] = useState(null);
+
+  const products = [
+    {
+      name: "Pro plan",
+      description:
+        "Plan without limit. With ability to edit and to view profiles and projects, in our crm",
+      price: "20",
+      amount: 2000,
+      currency: "usd",
+      quantity: 1,
+      plan: "plan_HsKX5IKk4zWRfV"
+    },
+    {
+      name: "Limited Plan",
+      description:
+        "Plan with multiple restrictions without the ability to edit profiles and projects",
+      price: "5",
+      amount: 500,
+      currency: "usd",
+      quantity: 1,
+      plan: "price_1HJwe5GTsbrmziT6tEbnqyyG",
+    },
+  ];
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -137,7 +166,10 @@ function Checkout(props) {
       billing_details: billingDetails,
     });
 
-    await asyncSubscribe({plan:"plan_HsKX5IKk4zWRfV",payment_method:payload.paymentMethod.id});
+    await asyncSubscribe({
+      plan: selectedPlan.plan,
+      payment_method: payload.paymentMethod.id,
+    });
 
     setProcessing(false);
 
@@ -159,80 +191,115 @@ function Checkout(props) {
     });
   };
 
-  return paymentMethod ? (
+  const handleClickSelect = (elem) => {
+    setSelectedPlan(elem);
+  };
+
+  return (
     <div className="html">
       <div className="body">
-        <div className="Result">
-          <div className="ResultTitle" role="alert">
-            Payment successful
-          </div>
-          <div className="ResultMessage">
-            You successfully subscribe with PaymentMethod: {paymentMethod.id}
-          </div>
-          <ResetButton onClick={reset} />
+          {selectedPlan ? (
+            paymentMethod ? (
+              <div className="Result">
+                <div className="ResultTitle" role="alert">
+                  Payment successful
+                </div>
+                <div className="ResultMessage">
+                  You successfully subscribe with PaymentMethod:
+                  {paymentMethod.id}
+                </div>
+                <ResetButton onClick={reset} />
+              </div>
+            ) : (
+              <>
+                <form className="Form" onSubmit={handleSubmit}>
+                  <h3> {selectedPlan.name} </h3>
+                  <fieldset className="FormGroup">
+                    <Field
+                      label="Name"
+                      id="name"
+                      type="text"
+                      placeholder="Jane Doe"
+                      required
+                      autoComplete="name"
+                      value={billingDetails.name}
+                      onChange={(e) => {
+                        setBillingDetails({
+                          ...billingDetails,
+                          name: e.target.value,
+                        });
+                      }}
+                    />
+                    <Field
+                      label="Email"
+                      id="email"
+                      type="email"
+                      placeholder="test@gmail.com"
+                      required
+                      autoComplete="email"
+                      value={billingDetails.email}
+                      onChange={(e) => {
+                        setBillingDetails({
+                          ...billingDetails,
+                          email: e.target.value,
+                        });
+                      }}
+                    />
+                    <Field
+                      label="Phone"
+                      id="phone"
+                      type="tel"
+                      placeholder="(111) 111-1111"
+                      required
+                      autoComplete="tel"
+                      value={billingDetails.phone}
+                      onChange={(e) => {
+                        setBillingDetails({
+                          ...billingDetails,
+                          phone: e.target.value,
+                        });
+                      }}
+                    />
+                  </fieldset>
+                  <fieldset className="FormGroup">
+                    <CardField
+                      onChange={(e) => {
+                        setError(e.error);
+                        setCardComplete(e.complete);
+                      }}
+                    />
+                  </fieldset>
+                  {error && <ErrorMessage>{error.message}</ErrorMessage>}
+                  <SubmitButton
+                    processing={processing}
+                    error={error}
+                    disabled={!stripe}
+                  >
+                    Pay ${selectedPlan.price}
+                  </SubmitButton>
+                <Box my={2}>
+                  <button
+                    style={CARD_OPTIONS.style.backButton}
+                    onClick={() => {
+                      setSelectedPlan(null);
+                    }}
+                  >
+                    back
+                  </button>
+                </Box>
+                </form>
+              </>
+            )
+          ) : products.map((elem) => (
+            <PlanCard
+              name={elem.name}
+              description={elem.description}
+              price={elem.price}
+              onClick={() => handleClickSelect(elem)}
+            />
+          ))}
         </div>
       </div>
-    </div>
-  ) : (
-    <div className="html">
-    <div className="body">
-    <div className="Result">
-    <form className="Form" onSubmit={handleSubmit}>
-      <h3> Monthly access plan </h3>
-      <fieldset className="FormGroup">
-        <Field
-          label="Name"
-          id="name"
-          type="text"
-          placeholder="Jane Doe"
-          required
-          autoComplete="name"
-          value={billingDetails.name}
-          onChange={(e) => {
-            setBillingDetails({ ...billingDetails, name: e.target.value });
-          }}
-        />
-        <Field
-          label="Email"
-          id="email"
-          type="email"
-          placeholder="test@gmail.com"
-          required
-          autoComplete="email"
-          value={billingDetails.email}
-          onChange={(e) => {
-            setBillingDetails({ ...billingDetails, email: e.target.value });
-          }}
-        />
-        <Field
-          label="Phone"
-          id="phone"
-          type="tel"
-          placeholder="(111) 111-1111"
-          required
-          autoComplete="tel"
-          value={billingDetails.phone}
-          onChange={(e) => {
-            setBillingDetails({ ...billingDetails, phone: e.target.value });
-          }}
-        />
-      </fieldset>
-      <fieldset className="FormGroup">
-        <CardField
-          onChange={(e) => {
-            setError(e.error);
-            setCardComplete(e.complete);
-          }}
-        />
-      </fieldset>
-      {error && <ErrorMessage>{error.message}</ErrorMessage>}
-      <SubmitButton processing={processing} error={error} disabled={!stripe}>
-        Pay $20
-      </SubmitButton>
-    </form>
-    </div>
-    </div>
-    </div>
   );
 }
 

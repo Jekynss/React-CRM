@@ -23,8 +23,9 @@ import FormControl from "@material-ui/core/FormControl";
 import ListItemText from "@material-ui/core/ListItemText";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import { Link } from "react-router-dom";
+import StatusMessage from "../StatusMessage/StatusMessage";
 
 const useStyles = makeStyles({
   "MuiTableCell-root": {
@@ -51,10 +52,10 @@ const useStyles = makeStyles({
   form_input: {
     textAlign: "center",
   },
-  link:{
-    textDecoration:"none",
-    color:'black'
-  }
+  link: {
+    textDecoration: "none",
+    color: "black",
+  },
 });
 
 function ProjectsTable(props) {
@@ -71,10 +72,10 @@ function ProjectsTable(props) {
   const [personName, setPersonName] = React.useState([]);
   const [developersName, setDevelopersName] = React.useState([]);
 
-  const clearState=()=>{
+  const clearState = () => {
     setPersonName([]);
     setDevelopersName([]);
-  }
+  };
   const stackNames = [
     "Node",
     "JavaScript",
@@ -124,7 +125,11 @@ function ProjectsTable(props) {
   function elementToRow(element) {
     return {
       id: element.id,
-      name: <Link to={`/projects/${element.id}`} className={classes.link}>{element.name}</Link>,
+      name: (
+        <Link to={`/projects/${element.id}`} className={classes.link}>
+          {element.name}
+        </Link>
+      ),
       status: element.status,
       stack: <StackCell stacks={element.stack} />,
       price: `${element.price}$`,
@@ -137,118 +142,125 @@ function ProjectsTable(props) {
   }
 
   return (
-    <Box width="80%" mx="auto">
-      <MaterialTable
-        className={classes.table}
-        title="Projects Table"
-        columns={table.columns}
-        data={table.data}
-        components={{
-          EditField: (fieldProps) => {
-            const {
-              columnDef: { multiplySelectStack, multiplySelectDevs },
-            } = fieldProps;
-            if (multiplySelectStack) {
-              return (
-                <Autocomplete
-                multiple
-                id="tags-standard"
-                value={personName}
-                options={stackNames}
-                onChange={(e,val)=>{setPersonName(val)}}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Stack"
-                    placeholder="Stack"
+    <>
+      <StatusMessage />
+      <Box width="80%" mx="auto">
+        <MaterialTable
+          className={classes.table}
+          title="Projects Table"
+          columns={table.columns}
+          data={table.data}
+          components={{
+            EditField: (fieldProps) => {
+              const {
+                columnDef: { multiplySelectStack, multiplySelectDevs },
+              } = fieldProps;
+              if (multiplySelectStack) {
+                return (
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    value={personName}
+                    options={stackNames}
+                    onChange={(e, val) => {
+                      setPersonName(val);
+                    }}
+                    getOptionLabel={(option) => option}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Stack"
+                        placeholder="Stack"
+                      />
+                    )}
                   />
-                )}
-              />
-              );
-            } else if (multiplySelectDevs) {
-              return (
-                <Autocomplete
-                multiple
-                id="tags-standard"
-                value={developersName}
-                options={developers}
-                onChange={(e,val)=>{setDevelopersName(val)}}
-                getOptionLabel={(option) => option.name}
-                renderOption={(option, { selected }) => (
-                  <>
-                          <Box component="span" mx={2}>
-                            <CardMedia
-                              component="img"
-                              alt="Contemplative Reptile"
-                              height="30"
-                              image={option.image_url}
-                              title="Contemplative Reptile"
-                              className={classes.image}
-                            />
-                          </Box>
-                          <ListItemText primary={option.name} />
-                  </>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    label="Developers"
-                    placeholder="Developers"
+                );
+              } else if (multiplySelectDevs) {
+                return (
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    value={developersName}
+                    options={developers}
+                    onChange={(e, val) => {
+                      setDevelopersName(val);
+                    }}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(option, { selected }) => (
+                      <>
+                        <Box component="span" mx={2}>
+                          <CardMedia
+                            component="img"
+                            alt="Contemplative Reptile"
+                            height="30"
+                            image={option.image_url}
+                            title="Contemplative Reptile"
+                            className={classes.image}
+                          />
+                        </Box>
+                        <ListItemText primary={option.name} />
+                      </>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Developers"
+                        placeholder="Developers"
+                      />
+                    )}
                   />
-                )}
-              />
-              );
-            } else {
-              return (
-                <Box mt="19px" className={classes.form_input}>
-                  <MTableEditField
-                    className={classes.formControl}
-                    {...{ ...fieldProps, value: fieldProps.value || "" }}
-                  />
-                </Box>
-              );
-            }
-          },
-        }}
-        options={{
-          actionsColumnIndex: -1,
-          cellStyle: {
-            textAlign: "center",
-            verticalAlign: "center",
-          },
-          rowStyle: (rowData) => {},
-          headerStyle: {
-            textAlign: "center",
-          },
-        }}
-        align="center"
-        editable={{
-          onRowAdd: (newData) =>
-            new Promise(async (resolve) => {
-              const developersIds = developersName.map((elem) => elem.id);
-              await asyncAddProject({
-                project: {
-                  ...newData,
-                  stack: personName,
-                  developers: developersIds,
-                },
-              });
-              await asyncSetProjects();
-              clearState();
-              resolve();
-            }),
-          onRowDelete: (oldData) =>
-            new Promise(async (resolve) => {
-              await asyncDeleteProject(oldData.id);
-              await asyncSetProjects();
-              resolve();
-            }),
-        }}
-      />
-    </Box>
+                );
+              } else {
+                return (
+                  <Box mt="19px" className={classes.form_input}>
+                    <MTableEditField
+                      className={classes.formControl}
+                      {...{ ...fieldProps, value: fieldProps.value || "" }}
+                    />
+                  </Box>
+                );
+              }
+            },
+          }}
+          options={{
+            actionsColumnIndex: -1,
+            cellStyle: {
+              textAlign: "center",
+              verticalAlign: "center",
+            },
+            rowStyle: (rowData) => {},
+            headerStyle: {
+              textAlign: "center",
+            },
+          }}
+          align="center"
+          editable={{
+            onRowAdd: (newData) =>
+              new Promise(async (resolve) => {
+                const developersIds = developersName.map((elem) => elem.id);
+                await asyncAddProject({
+                  project: {
+                    ...newData,
+                    stack: personName,
+                    developers: developersIds,
+                  },
+                });
+                await asyncSetProjects();
+                clearState();
+                resolve();
+              }),
+            onRowDelete: (oldData) =>
+              new Promise(async (resolve) => {
+                await asyncDeleteProject(oldData.id);
+                await asyncSetProjects();
+                resolve();
+              }),
+          }}
+        />
+      </Box>
+    </>
   );
 }
 

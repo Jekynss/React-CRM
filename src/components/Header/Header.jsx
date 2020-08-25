@@ -62,7 +62,7 @@ function Header(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <AppBar position="fixed">
+        <AppBar position="inherit">
         {token &&<Toolbar>
             <Grid
               container

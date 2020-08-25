@@ -18,7 +18,7 @@ function BadgesSection(props) {
   const handleDelete = async () => {
     const newSkills = objects.filter((elem) => elem !== tryDelete);
     const data = await asyncUpdate({ id, [`${name.toLowerCase()}`]: newSkills });
-    if(setResult)
+    if(setResult && data)
     setResult(data);
     setTryDelete("");
     setOpenModal(false);

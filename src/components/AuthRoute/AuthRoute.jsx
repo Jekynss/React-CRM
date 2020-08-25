@@ -5,13 +5,10 @@ import {getSubscriptionStatus,paidStatus} from '../../redux/actions/CardsAction'
 
 const AuthRoute = (props) => {
   const { token, isAuthUser, type, paidStatus } = props;
-  console.log(type === "guest" && token,"guest and token");
-  console.log(type === "private" && !token,"priv and no token");
-  console.log(type === "private" && token && paidStatus && paidStatus!=="active","last");
-  console.log( paidStatus ,"last");
   if (type === "guest" && token) return <Redirect to="/" />;
   else if (type === "private" && !token) return <Redirect to="/login" />;
   else if (type === "private" && token && paidStatus && paidStatus!=="active" && props.path!=="/checkout") return <Redirect to="/checkout" />;
+  else if (type === "private" && token && paidStatus==="active" && props.path==="/checkout") return <Redirect to="/" />;
 
   return <Route {...props} />;
 };
