@@ -14,6 +14,8 @@ export const SET_LIMIT_PEOPLE = "SET_LIMIT_PEOPLE";
 export const SET_TOKEN = "SET_TOKEN";
 export const SET_REDIRECT = "SET_REDIRECT";
 export const SET_PROJECTS = "SET_PROJECTS";
+export const SET_PAID_STATUS = "PAID_STATUS";
+export const SET_AUTH = "SET_AUTH";
 
 export const addCard = (card) => ({
   type: ADD_CARD,
@@ -42,6 +44,11 @@ export const closePopup = () => ({
 export const showSuccessPopup = (message) => ({
   type: SHOW_SUCCESS_POPUP,
   message,
+});
+
+export const setAuth = (auth) => ({
+  type: SET_AUTH,
+  payload: {auth},
 });
 
 export const showErrorPopup = (message) => ({
@@ -74,6 +81,11 @@ export const setProjects = (projects) => ({
   payload: projects,
 });
 
+export const paidStatus = (status) => ({
+  type: SET_PAID_STATUS,
+  payload: { status },
+});
+
 export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
     const token = getCurentToken();
@@ -86,12 +98,12 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
     data.message
       ? dispatch(showSuccessPopup(data.message))
       : dispatch(showErrorPopup(data.error));
+      dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
@@ -105,12 +117,12 @@ export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
     );
     dispatch(deleteCard(card_id));
     dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncUpdateCardRequest = (card) => async (dispatch) => {
@@ -125,12 +137,12 @@ export const asyncUpdateCardRequest = (card) => async (dispatch) => {
     );
     dispatch(updateCard(card));
     dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncRegisterUser = (user) => async (dispatch) => {
@@ -141,12 +153,12 @@ export const asyncRegisterUser = (user) => async (dispatch) => {
     );
     dispatch(showSuccessPopup(data.message));
     dispatch(setRedirect("/login"));
+    dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncAuthorizeUser = (user) => async (dispatch) => {
@@ -159,12 +171,12 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
     data.error
       ? dispatch(showErrorPopup(data.message))
       : dispatch(setRedirect("/"));
+      dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response?.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncSetProjects = () => async (dispatch) => {
@@ -179,23 +191,30 @@ export const asyncSetProjects = () => async (dispatch) => {
   }
 };
 
-export const asyncDeleteProject = (id) => async () => {
+export const asyncDeleteProject = (id) => async (dispatch) => {
   try {
     const token = getCurentToken();
-    await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
+    const {data} = await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
       headers: { token },
     });
-  } catch (err) {
-    console.log(err);
-  }
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );}
 };
 
 export const asyncAddProject = (payload) => async () => {
   try {
     const token = getCurentToken();
-    const {data} = await Axios.post(`http://localhost:3002/api/v1/projects`, payload.project, {
-      headers: { token: token },
-    });
+    const { data } = await Axios.post(
+      `http://localhost:3002/api/v1/projects`,
+      payload.project,
+      {
+        headers: { token: token },
+      }
+    );
     return data;
   } catch (err) {
     console.log(err);
@@ -205,12 +224,100 @@ export const asyncAddProject = (payload) => async () => {
 export const asyncGetProjects = (id) => async () => {
   try {
     const token = getCurentToken();
-    const {data} = await Axios.get(`http://localhost:3002/api/v1/people/${id}/projects`, {
-      headers: { token: token },
-    });
+    const { data } = await Axios.get(
+      `http://localhost:3002/api/v1/people/${id}/projects`,
+      {
+        headers: { token: token },
+      }
+    );
     return data;
   } catch (err) {
     console.log(err);
   }
 };
 
+export const asyncGetProject = (id) => async () => {
+  try {
+    const token = getCurentToken();
+    const { data } = await Axios.get(
+      `http://localhost:3002/api/v1/projects/${id}`,
+      {
+        headers: { token: token },
+      }
+    );
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const asyncUpdateProject = (project) => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const { data } = await Axios.put(
+      `http://localhost:3002/api/v1/projects/${project.id}`,
+      project,
+      {
+        headers: { token: token },
+      }
+    );
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+    return data;
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
+  }
+};
+
+export const getSubscriptionStatus = () => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const {
+      data,
+    } = await Axios.get("http://localhost:3002/api/v1/users/getCurrent", {
+      headers: { token: token },
+    });
+    dispatch(paidStatus(data.status));
+  } catch (err) {}
+};
+
+export const asyncSubscribe = (payload) => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const {
+      data,
+    } = await Axios.post(
+      "http://localhost:3002/api/v1/stripe/subscriptions",
+      payload,
+      { headers: { token: token } }
+    );
+
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+    getSubscriptionStatus();
+    return data;
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
+  }
+};
+
+export const asyncSetAuth = () => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const tokenValid = await Axios.get(
+      "http://localhost:3002/api/v1/token/validate",
+      {
+        headers: { token: token },
+      }
+    );
+    dispatch(setAuth(tokenValid.status===200))
+  } catch (error) {
+      dispatch(setToken(''));
+      dispatch(setAuth(false))
+      console.log(`${error.message}: ${error.response.data.message}`);
+  }
+};

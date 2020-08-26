@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -8,23 +8,55 @@ import PeoplePage from "./pages/PeoplePage";
 import { Switch, Route } from "react-router-dom";
 import Axios from "axios";
 import { connect } from "react-redux";
-import { setInitialCards, asyncSetProjects } from "./redux/actions/CardsAction";
+import {
+  setInitialCards,
+  asyncSetProjects,
+  getSubscriptionStatus,
+  paidStatus,
+  asyncSetAuth
+} from "./redux/actions/CardsAction";
 import Header from "./components/Header/Header";
 import RegistrationPage from "./pages/RegistrationPage";
 import AuthRoute from "./components/AuthRoute/AuthRoute";
+import ProjectPage from "./pages/ProjectPage";
+import StripeCheckout from "./pages/StripeCheckout";
 
 function App(props) {
-  const { setInitialCards, token, asyncSetProjects } = props;
-  useEffect(() => {
-    if (token) {
-      Axios.get("http://localhost:3002/api/v1/people", {
-        headers: { token: token },
-      }).then((res) => {
-        setInitialCards(res.data);
-      });
-      asyncSetProjects();
+  const {
+    setInitialCards,
+    token,
+    asyncSetProjects,
+    getSubscriptionStatus,
+    isAuth,
+    asyncSetAuth,
+  } = props;
+
+  async function checkPaid() {
+    await getSubscriptionStatus();
+  }
+
+  async function initIfAuth() {
+    try {
+      if(!isAuth && token){
+        asyncSetAuth();
+      }
+      if (token && isAuth) {
+        await checkPaid();
+        Axios.get("http://localhost:3002/api/v1/people", {
+          headers: { token: token },
+        }).then((res) => {
+          setInitialCards(res.data);
+        });
+        asyncSetProjects();
+      }
+    } catch (err) {
+      console.log(err);
     }
-  }, [token]);
+  }
+
+  useEffect(() => {
+    initIfAuth();
+  }, [token,isAuth]);
 
   return (
     <div className="App">
@@ -32,6 +64,9 @@ function App(props) {
       <Switch>
         <AuthRoute exact path="/registration" type="guest">
           <RegistrationPage />
+        </AuthRoute>
+        <AuthRoute exact path="/checkout" type="private" statusPaid={"active"}>
+          <StripeCheckout />
         </AuthRoute>
         <AuthRoute exact path="/" type="private">
           <HomePage />
@@ -42,6 +77,11 @@ function App(props) {
         <AuthRoute exact path="/projects" type="private">
           <ProjectsPage />
         </AuthRoute>
+        <AuthRoute
+          path="/projects/:id"
+          type="private"
+          render={(props) => <ProjectPage {...props} />}
+        ></AuthRoute>
         <AuthRoute
           path="/people/:id"
           type="private"
@@ -57,10 +97,13 @@ function App(props) {
 
 const mapStateToProps = (state) => ({
   token: state.token,
+  isAuth: state.isAuth
 });
 const mapDispatchToProps = {
   setInitialCards,
   asyncSetProjects,
+  getSubscriptionStatus,
+  asyncSetAuth,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
