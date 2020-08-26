@@ -14,7 +14,7 @@ function AddNewSkillForm(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = await asyncUpdateCardRequest({ id: id, [`${name}`]: [...objects, skill] });
-    if(setResult)
+    if(setResult && data)
     setResult(data);
     setSkill("");
   };
