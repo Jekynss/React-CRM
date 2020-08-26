@@ -15,6 +15,7 @@ export const SET_TOKEN = "SET_TOKEN";
 export const SET_REDIRECT = "SET_REDIRECT";
 export const SET_PROJECTS = "SET_PROJECTS";
 export const SET_PAID_STATUS = "PAID_STATUS";
+export const SET_AUTH = "SET_AUTH";
 
 export const addCard = (card) => ({
   type: ADD_CARD,
@@ -43,6 +44,11 @@ export const closePopup = () => ({
 export const showSuccessPopup = (message) => ({
   type: SHOW_SUCCESS_POPUP,
   message,
+});
+
+export const setAuth = (auth) => ({
+  type: SET_AUTH,
+  payload: {auth},
 });
 
 export const showErrorPopup = (message) => ({
@@ -92,12 +98,12 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
     data.message
       ? dispatch(showSuccessPopup(data.message))
       : dispatch(showErrorPopup(data.error));
+      dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
@@ -111,12 +117,12 @@ export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
     );
     dispatch(deleteCard(card_id));
     dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncUpdateCardRequest = (card) => async (dispatch) => {
@@ -131,12 +137,12 @@ export const asyncUpdateCardRequest = (card) => async (dispatch) => {
     );
     dispatch(updateCard(card));
     dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncRegisterUser = (user) => async (dispatch) => {
@@ -147,12 +153,12 @@ export const asyncRegisterUser = (user) => async (dispatch) => {
     );
     dispatch(showSuccessPopup(data.message));
     dispatch(setRedirect("/login"));
+    dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncAuthorizeUser = (user) => async (dispatch) => {
@@ -165,12 +171,12 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
     data.error
       ? dispatch(showErrorPopup(data.message))
       : dispatch(setRedirect("/"));
+      dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response?.data.message}`)
     );
   }
-  dispatchDebouncer(closePopup, 3000);
 };
 
 export const asyncSetProjects = () => async (dispatch) => {
@@ -296,5 +302,22 @@ export const asyncSubscribe = (payload) => async (dispatch) => {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
     );
+  }
+};
+
+export const asyncSetAuth = () => async (dispatch) => {
+  try {
+    const token = getCurentToken();
+    const tokenValid = await Axios.get(
+      "http://localhost:3002/api/v1/token/validate",
+      {
+        headers: { token: token },
+      }
+    );
+    dispatch(setAuth(tokenValid.status===200))
+  } catch (error) {
+      dispatch(setToken(''));
+      dispatch(setAuth(false))
+      console.log(`${error.message}: ${error.response.data.message}`);
   }
 };

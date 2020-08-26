@@ -1,27 +1,29 @@
 import * as actions from "../actions/CardsAction";
+import { dispatchDebouncer } from "../../components/utils";
 
 const initialState = {
   cards: [],
-  error:'',
-  message:'',
-  limitHome:4,
-  limitPeople:12,
-  token:'',
-  projects:[],
-  paidStatus:'',
+  error: "",
+  message: "",
+  limitHome: 4,
+  limitPeople: 12,
+  token: "",
+  projects: [],
+  paidStatus: "",
+  isAuth:false,
 };
 
 export default function CardReducer(state = initialState, action) {
   switch (action.type) {
     case actions.ADD_CARD: {
-      return { ...state, cards: [action.card,...state.cards], popup: true };
+      return { ...state, cards: [action.card, ...state.cards], popup: true };
     }
     case actions.DELETE_CARD: {
       return {
         ...state,
         cards: state.cards.filter(
           (card) => card.id.toString() !== action.card_id.toString()
-        )
+        ),
       };
     }
     case actions.UPDATE_CARD: {
@@ -40,7 +42,7 @@ export default function CardReducer(state = initialState, action) {
     case actions.CLOSE_POPUP: {
       return {
         ...state,
-        popup: '',
+        popup: "",
       };
     }
 
@@ -53,6 +55,12 @@ export default function CardReducer(state = initialState, action) {
     }
 
     case actions.SHOW_ERROR_POPUP: {
+      dispatchDebouncer(
+        () => ({
+          type: "CLOSE_POPUP",
+        }),
+        3000
+      );
       return {
         ...state,
         popup: action.message,
@@ -65,28 +73,35 @@ export default function CardReducer(state = initialState, action) {
     }
 
     case actions.SET_LIMIT_HOME: {
-      return { ...state, limitHome:action.limit };
+      return { ...state, limitHome: action.limit };
     }
 
     case actions.SET_LIMIT_PEOPLE: {
-      return { ...state, limitPeople:action.limit };
+      return { ...state, limitPeople: action.limit };
     }
 
     case actions.SET_TOKEN: {
-      localStorage.setItem('user', JSON.stringify({...action.payload.user,token:action.payload.token}));
-      return { ...state, token:action.payload.token};
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ ...action.payload.user, token: action.payload.token })
+      );
+      return { ...state, token: action.payload.token };
     }
 
     case actions.SET_REDIRECT: {
-      return { ...state, redirectLink:action.link};
+      return { ...state, redirectLink: action.link };
     }
 
-    case actions.SET_PROJECTS:{
-      return { ...state, projects:action.payload};
+    case actions.SET_PROJECTS: {
+      return { ...state, projects: action.payload };
     }
 
-    case actions.SET_PAID_STATUS:{
-      return { ...state, paidStatus:action.payload.status};
+    case actions.SET_PAID_STATUS: {
+      return { ...state, paidStatus: action.payload.status };
+    }
+
+    case actions.SET_AUTH: {
+      return { ...state, isAuth: action.payload.auth };
     }
 
     default:

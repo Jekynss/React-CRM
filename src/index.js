@@ -1,39 +1,42 @@
-import React from 'react';
-import {Provider} from 'react-redux'
-import ReactDOM from 'react-dom';
-import {createStore, applyMiddleware, compose} from 'redux'
-import thunk from 'redux-thunk';
-import App from './App';
-import reducer from './redux/reducers/CardsReducer'
-import { BrowserRouter} from "react-router-dom";
-import {setToken} from './redux/actions/CardsAction'
+import React from "react";
+import { Provider } from "react-redux";
+import ReactDOM from "react-dom";
+import { createStore, applyMiddleware, compose } from "redux";
+import thunk from "redux-thunk";
+import App from "./App";
+import reducer from "./redux/reducers/CardsReducer";
+import { BrowserRouter } from "react-router-dom";
+import { setToken,asyncSetAuth, setAuth } from "./redux/actions/CardsAction";
 
 const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?   
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-    }) : compose;
+  typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
+    : compose;
 
 const enhancer = composeEnhancers(
-  applyMiddleware(thunk),
+  applyMiddleware(thunk)
   // other store enhancers if any
 );
 
 const store = createStore(reducer, enhancer);
 
-export const dispatch = store.dispatch; 
+export const dispatch = store.dispatch;
 
-const localToken = JSON.parse(localStorage.getItem('user'))?.token;
-if(localToken)
-dispatch(setToken({token:localToken}))
+async function auth() {
+  const localToken = JSON.parse(localStorage.getItem("user"))?.token;
+  if (localToken) {
+    dispatch(setToken({ token: localToken }));
+  }
+}
+auth();
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-    <BrowserRouter>
-    <App />
-    </BrowserRouter>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );

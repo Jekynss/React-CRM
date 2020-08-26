@@ -4,7 +4,7 @@ import { Redirect, Route } from "react-router";
 import {getSubscriptionStatus,paidStatus} from '../../redux/actions/CardsAction';
 
 const AuthRoute = (props) => {
-  const { token, isAuthUser, type, paidStatus } = props;
+  const { token, isAuth, type, paidStatus } = props;
   if (type === "guest" && token) return <Redirect to="/" />;
   else if (type === "private" && !token) return <Redirect to="/login" />;
   else if (type === "private" && token && paidStatus && paidStatus!=="active" && props.path!=="/checkout") return <Redirect to="/checkout" />;
@@ -13,8 +13,9 @@ const AuthRoute = (props) => {
   return <Route {...props} />;
 };
 
-const mapStateToProps = ({ token,paidStatus }) => ({
+const mapStateToProps = ({ token,paidStatus,isAuth }) => ({
   token,
+  isAuth,
   paidStatus
 });
 
