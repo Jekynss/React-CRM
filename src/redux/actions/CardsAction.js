@@ -90,7 +90,7 @@ export const asyncAddCardRequest = (card) => async (dispatch) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.post(
-      `http://localhost:3002/api/v1/people`,
+      `/api/v1/people`,
       card,
       { headers: { token: token } }
     );
@@ -110,7 +110,7 @@ export const asyncDeleteCardRequest = (card_id) => async (dispatch) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.delete(
-      `http://127.0.0.1:3002/api/v1/people/${card_id}`,
+      `/api/v1/people/${card_id}`,
       {
         headers: { token: token },
       }
@@ -131,7 +131,7 @@ export const asyncUpdateCardRequest = (card) => async (dispatch) => {
     const {
       data,
     } = await Axios.put(
-      `http://127.0.0.1:3002/api/v1/people/${card.id}`,
+      `/api/v1/people/${card.id}`,
       card,
       { headers: { token: token } }
     );
@@ -148,7 +148,7 @@ export const asyncUpdateCardRequest = (card) => async (dispatch) => {
 export const asyncRegisterUser = (user) => async (dispatch) => {
   try {
     const { data } = await Axios.post(
-      `http://127.0.0.1:3002/api/v1/users/registration`,
+      `/api/v1/users/registration`,
       user
     );
     dispatch(showSuccessPopup(data.message));
@@ -164,7 +164,7 @@ export const asyncRegisterUser = (user) => async (dispatch) => {
 export const asyncAuthorizeUser = (user) => async (dispatch) => {
   try {
     const { data } = await Axios.post(
-      `http://127.0.0.1:3002/api/v1/users/login`,
+      `/api/v1/users/login`,
       user
     );
     dispatch(setToken(data));
@@ -182,7 +182,7 @@ export const asyncAuthorizeUser = (user) => async (dispatch) => {
 export const asyncSetProjects = () => async (dispatch) => {
   try {
     const token = getCurentToken();
-    const { data } = await Axios.get("http://localhost:3002/api/v1/projects", {
+    const { data } = await Axios.get("/api/v1/projects", {
       headers: { token },
     });
     dispatch(setProjects(data));
@@ -194,7 +194,7 @@ export const asyncSetProjects = () => async (dispatch) => {
 export const asyncDeleteProject = (id) => async (dispatch) => {
   try {
     const token = getCurentToken();
-    const {data} = await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
+    const {data} = await Axios.delete(`/api/v1/projects/${id}`, {
       headers: { token },
     });
     dispatch(showSuccessPopup(data.message));
@@ -209,7 +209,7 @@ export const asyncAddProject = (payload) => async () => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.post(
-      `http://localhost:3002/api/v1/projects`,
+      `/api/v1/projects`,
       payload.project,
       {
         headers: { token: token },
@@ -225,7 +225,7 @@ export const asyncGetProjects = (id) => async () => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.get(
-      `http://localhost:3002/api/v1/people/${id}/projects`,
+      `/api/v1/people/${id}/projects`,
       {
         headers: { token: token },
       }
@@ -240,7 +240,7 @@ export const asyncGetProject = (id) => async () => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.get(
-      `http://localhost:3002/api/v1/projects/${id}`,
+      `/api/v1/projects/${id}`,
       {
         headers: { token: token },
       }
@@ -255,7 +255,7 @@ export const asyncUpdateProject = (project) => async (dispatch) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.put(
-      `http://localhost:3002/api/v1/projects/${project.id}`,
+      `/api/v1/projects/${project.id}`,
       project,
       {
         headers: { token: token },
@@ -276,7 +276,7 @@ export const getSubscriptionStatus = () => async (dispatch) => {
     const token = getCurentToken();
     const {
       data,
-    } = await Axios.get("http://localhost:3002/api/v1/users/getCurrent", {
+    } = await Axios.get("/api/v1/users/getCurrent", {
       headers: { token: token },
     });
     dispatch(paidStatus(data.status));
@@ -289,7 +289,7 @@ export const asyncSubscribe = (payload) => async (dispatch) => {
     const {
       data,
     } = await Axios.post(
-      "http://localhost:3002/api/v1/stripe/subscriptions",
+      "/api/v1/stripe/subscriptions",
       payload,
       { headers: { token: token } }
     );
@@ -309,7 +309,7 @@ export const asyncSetAuth = () => async (dispatch) => {
   try {
     const token = getCurentToken();
     const tokenValid = await Axios.get(
-      "http://localhost:3002/api/v1/token/validate",
+      "/api/v1/token/validate",
       {
         headers: { token: token },
       }

@@ -42,7 +42,7 @@ function App(props) {
       }
       if (token && isAuth) {
         await checkPaid();
-        Axios.get("http://localhost:3002/api/v1/people", {
+        Axios.get("/api/v1/people", {
           headers: { token: token },
         }).then((res) => {
           setInitialCards(res.data);
