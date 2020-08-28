@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import {
@@ -22,6 +22,7 @@ import { useHistory } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import ProjectsBadgesSection from "../components/ProjectsBadgesSection/ProjectsBadgesSection";
 import BadgesSection from "../components/BadgesSection/BadgesSection";
+import {ReduxState, Card} from '../components/utils/types'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,8 +76,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ProfilePage(props) {
-  const cardTemplate = {
+type Props={
+   state:ReduxState,
+   asyncUpdateCardRequest(card:Card):Promise<void>,
+   asyncAddCardRequest(card:Card):Promise<void>,
+   asyncDeleteCardRequest(card_id:number):Promise<void>,
+   match:{params:{id:number}}
+}
+
+const ProfilePage = (props:Props) => {
+  const cardTemplate:Card = {
+    id:1,
     name: "",
     description: "",
     phone: "",
@@ -96,9 +106,9 @@ function ProfilePage(props) {
     asyncDeleteCardRequest,
     state,
   } = props;
-  const classes = useStyles();
+  const classes:any = useStyles();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setWasChanged(false);
     if (card.id) {
@@ -110,7 +120,7 @@ function ProfilePage(props) {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
     if (!wasChanged) setWasChanged(true);
     setCard({ ...card, [e.target.name]: e.target.value });
   };
@@ -142,12 +152,12 @@ function ProfilePage(props) {
       <ValidatorForm
         onSubmit={handleSubmit}
         className={classes.main_form}
-        onError={(errors) => console.log(errors)}
+        onError={(errors:string) => console.log(errors)}
       >
         <Grid className={classes.form_container}>
           <ImageInput classes={classes} card={card} />
           <Grid
-            container
+            container="true"
             className={classes.input_texts}
             direction="column"
             justify="space-between"
@@ -204,7 +214,7 @@ function ProfilePage(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state:ReduxState) => ({
   state,
 });
 

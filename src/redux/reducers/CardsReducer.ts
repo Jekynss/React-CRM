@@ -1,7 +1,8 @@
-import * as actions from "../actions/CardsAction";
+import * as actions from "../../constants";
 import { dispatchDebouncer } from "../../components/utils";
+import {DispatchType,ReduxState,Card} from '../../components/utils/types'
 
-const initialState = {
+const initialState:ReduxState = {
   cards: [],
   error: "",
   message: "",
@@ -13,7 +14,7 @@ const initialState = {
   isAuth:false,
 };
 
-export default function CardReducer(state = initialState, action) {
+export default function CardReducer(state = initialState, action:DispatchType) {
   switch (action.type) {
     case actions.ADD_CARD: {
       return { ...state, cards: [action.card, ...state.cards], popup: true };
@@ -81,6 +82,10 @@ export default function CardReducer(state = initialState, action) {
     }
 
     case actions.SET_TOKEN: {
+      return { ...state, token: action.payload.token };
+    }
+
+    case actions.SET_TOKEN_AUTH: {
       localStorage.setItem(
         "user",
         JSON.stringify({ ...action.payload.user, token: action.payload.token })
@@ -93,7 +98,8 @@ export default function CardReducer(state = initialState, action) {
     }
 
     case actions.SET_PROJECTS: {
-      return { ...state, projects: action.payload };
+      console.log({ ...state, projects: action.payload.projects })
+      return { ...state, projects: action.payload.projects };
     }
 
     case actions.SET_PAID_STATUS: {

@@ -4,8 +4,9 @@ import People from '../components/People/People'
 import PageName from '../components/PageName/PageName'
 import { connect } from "react-redux";
 import {setLimitHomeToRedux} from '../redux/actions/CardsAction'
+import {ReduxState} from '../components/utils/types'
 
-function HomePage(props) {
+const HomePage:React.FC<{limitPeople:number}> = (props) => {
   const {limitPeople} = props;
   return (
     <div className="PeoplePage">
@@ -16,7 +17,7 @@ function HomePage(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state:ReduxState) => ({
   limitPeople:state.limitHome
 });
 

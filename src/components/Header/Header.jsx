@@ -11,7 +11,7 @@ import Paper from "@material-ui/core/Paper";
 import { Link } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { connect } from "react-redux";
-import {setToken, paidStatus} from '../../redux/actions/CardsAction'
+import {setTokenAuth, paidStatus} from '../../redux/actions/CardsAction'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 function Header(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {token,setToken, paidStatus} = props;
+  const {token,setTokenAuth, paidStatus} = props;
   const open = Boolean(anchorEl);
 
   const handleMenu = (event) => {
@@ -56,7 +56,7 @@ function Header(props) {
 
   const handleLogout = () => {
     setAnchorEl(null);
-    setToken({token:''});
+    setTokenAuth({token:''});
   }
 
   return (
@@ -134,7 +134,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  setToken,
+  setTokenAuth,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

@@ -3,12 +3,12 @@ import ImageSection from '../components/ImageSection/ImageSection'
 import PageName from '../components/PageName/PageName'
 import ProjectsTable from '../components/ProjectsTable/ProjectsTable'
 
-export default function ProjectsPage() {
-    return (
-        <div className="ProjectsPage">
-          <PageName name={"Projects"}/>
-          <ImageSection/>
-          <ProjectsTable/>
-        </div>
-    )
-}
+const ProjectsPage: React.FC = () =>
+  (
+    <div className="ProjectsPage">
+      <PageName name={"Projects"} />
+      <ImageSection />
+      <ProjectsTable />
+    </div>
+  )
+export default ProjectsPage;

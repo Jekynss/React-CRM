@@ -121,6 +121,7 @@ function Checkout(props) {
 
   const products = [
     {
+      id:1,
       name: "Pro plan",
       description:
         "Plan without limit. With ability to edit and to view profiles and projects, in our crm",
@@ -131,6 +132,7 @@ function Checkout(props) {
       plan: "plan_HsKX5IKk4zWRfV"
     },
     {
+      id:2,
       name: "Limited Plan",
       description:
         "Plan with multiple restrictions without the ability to edit profiles and projects",
@@ -292,6 +294,7 @@ function Checkout(props) {
             )
           ) : products.map((elem) => (
             <PlanCard
+              key={elem.id}
               name={elem.name}
               description={elem.description}
               price={elem.price}

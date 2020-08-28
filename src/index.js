@@ -23,9 +23,9 @@ const store = createStore(reducer, enhancer);
 export const dispatch = store.dispatch;
 
 async function auth() {
-  const localToken = JSON.parse(localStorage.getItem("user"))?.token;
-  if (localToken) {
-    dispatch(setToken({ token: localToken }));
+  const localToken = JSON.parse(localStorage.getItem("user"));
+  if (localToken.token) {
+    dispatch(setToken({ token: localToken.token }));
   }
 }
 auth();
