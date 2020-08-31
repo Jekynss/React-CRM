@@ -136,7 +136,7 @@ export const asyncUpdateCardRequest = (card:Card) => async (dispatch:(obj: Dispa
   }
 };
 
-export const asyncRegisterUser = (user:Card) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncRegisterUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
   try {
     const { data } = await Axios.post(
       `http://127.0.0.1:3002/api/v1/users/registration`,

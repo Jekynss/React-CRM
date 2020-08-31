@@ -1,20 +1,22 @@
 import * as actions from "../../constants";
 import { dispatchDebouncer } from "../../components/utils";
-import {DispatchType,ReduxState,Card} from '../../components/utils/types'
+import {DispatchType,ReduxState} from '../../components/utils/types'
 
 const initialState:ReduxState = {
   cards: [],
-  error: "",
+  error: false,
   message: "",
   limitHome: 4,
   limitPeople: 12,
   token: "",
   projects: [],
   paidStatus: "",
+  popup:"",
   isAuth:false,
+  redirectLink:''
 };
 
-export default function CardReducer(state = initialState, action:DispatchType) {
+export default function CardReducer(state:ReduxState = initialState, action:DispatchType) {
   switch (action.type) {
     case actions.ADD_CARD: {
       return { ...state, cards: [action.card, ...state.cards], popup: true };
@@ -98,7 +100,6 @@ export default function CardReducer(state = initialState, action:DispatchType) {
     }
 
     case actions.SET_PROJECTS: {
-      console.log({ ...state, projects: action.payload.projects })
       return { ...state, projects: action.payload.projects };
     }
 

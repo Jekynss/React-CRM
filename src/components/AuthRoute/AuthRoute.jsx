@@ -7,7 +7,7 @@ const AuthRoute = (props) => {
   const { token, isAuth, type, paidStatus } = props;
   if (type === "guest" && token) return <Redirect to="/" />;
   else if (type === "private" && !token) return <Redirect to="/login" />;
-  else if (type === "private" && token && paidStatus && paidStatus!=="active" && props.path!=="/checkout") return <Redirect to="/checkout" />;
+  else if (type === "private" && token && paidStatus!=="active" && props.path!=="/checkout") return <Redirect to="/checkout" />;
   else if (type === "private" && token && paidStatus==="active" && props.path==="/checkout") return <Redirect to="/" />;
 
   return <Route {...props} />;

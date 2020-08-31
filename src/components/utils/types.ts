@@ -12,6 +12,29 @@ export type Card = {
   skills?:string[]
 };
 
+export type dublicateCard = {
+  id:number,
+  name: string,
+  description: string,
+  phone: string,
+  website: string,
+  email: string,
+  address: string,
+  image_url: string,
+  skills?:string[]
+};
+
+export type Product = {
+  id: number,
+  name: string,
+  description: string
+  price: string,
+  amount: number,
+  currency: string,
+  quantity: number,
+  plan: string
+};
+
 export type User = {
   email: string,
   password: string,
@@ -24,12 +47,19 @@ export type Project = {
   status: string,
   stack: string[],
   price: number,
-  description: string,
+  description?: string,
+  profiles?: Profile[]
+};
+
+export type Profile = {
+  id:number,
+  image_url:string,
+  name:string,
 };
 
 export type ReduxState = {
   cards: Card[],
-  error: string,
+  error: boolean,
   message: string,
   limitHome: number,
   limitPeople: number,
@@ -37,6 +67,8 @@ export type ReduxState = {
   projects: Project[],
   paidStatus: string,
   isAuth: boolean,
+  popup:string,
+  redirectLink:string,
 };
 
 export interface DispatchType {

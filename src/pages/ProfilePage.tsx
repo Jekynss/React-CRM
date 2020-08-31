@@ -22,9 +22,9 @@ import { useHistory } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import ProjectsBadgesSection from "../components/ProjectsBadgesSection/ProjectsBadgesSection";
 import BadgesSection from "../components/BadgesSection/BadgesSection";
-import {ReduxState, Card} from '../components/utils/types'
+import {ReduxState, Card , Project,Profile} from '../components/utils/types'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1,
   },
@@ -78,15 +78,15 @@ const useStyles = makeStyles((theme) => ({
 
 type Props={
    state:ReduxState,
-   asyncUpdateCardRequest(card:Card):Promise<void>,
+   asyncUpdateCardRequest:(obj:any)=>any,
    asyncAddCardRequest(card:Card):Promise<void>,
    asyncDeleteCardRequest(card_id:number):Promise<void>,
-   match:{params:{id:number}}
+   match:{params:{id:string}}
 }
 
 const ProfilePage = (props:Props) => {
   const cardTemplate:Card = {
-    id:1,
+    id:0,
     name: "",
     description: "",
     phone: "",
@@ -94,6 +94,7 @@ const ProfilePage = (props:Props) => {
     email: "",
     address: "",
     image_url: "",
+    skills:[""],
   };
   const history = useHistory();
   const [card, setCard] = useState(cardTemplate);
@@ -108,7 +109,7 @@ const ProfilePage = (props:Props) => {
   } = props;
   const classes:any = useStyles();
 
-  const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e:FormEvent<Element>) => {
     e.preventDefault();
     setWasChanged(false);
     if (card.id) {
@@ -125,7 +126,7 @@ const ProfilePage = (props:Props) => {
     setCard({ ...card, [e.target.name]: e.target.value });
   };
 
-  const handleClickDelete = () => {
+  const handleClickDelete:(event:React.MouseEvent<HTMLButtonElement,MouseEvent> ) => void = () => {
     setOpenModal(true);
   };
 
@@ -141,7 +142,7 @@ const ProfilePage = (props:Props) => {
 
   useEffect(() => {
     const current_id = props.match.params.id;
-    const card = state.cards.find((card) => card.id?.toString() === current_id);
+    const card = state.cards.find((card) => card.id.toString() === current_id);
     card ? setCard(card) : setCard(cardTemplate);
   }, [state.cards]);
 
@@ -152,16 +153,15 @@ const ProfilePage = (props:Props) => {
       <ValidatorForm
         onSubmit={handleSubmit}
         className={classes.main_form}
-        onError={(errors:string) => console.log(errors)}
+        onError={(errors:any[]) => console.log(errors)}
       >
         <Grid className={classes.form_container}>
           <ImageInput classes={classes} card={card} />
           <Grid
-            container="true"
+            container={true}
             className={classes.input_texts}
             direction="column"
             justify="space-between"
-            align="center"
           >
             <FullNameInput
               handleChange={handleChange}
