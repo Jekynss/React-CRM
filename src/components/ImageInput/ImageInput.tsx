@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState, ChangeEvent} from "react";
 import Grid from "@material-ui/core/Grid";
 import CardMedia from "@material-ui/core/CardMedia";
 import Box from "@material-ui/core/Box";
@@ -8,10 +8,13 @@ import {Card} from '../utils/types';
 type Props = {
   classes:any,
   card:Card,
+  avatar:any,
+  setAvatar:any,
 }
 
 export default function ImageInput(props:Props) {
-  const { classes, card } = props;
+  const { classes, card, setAvatar } = props;
+
   return (
     <Grid>
       <input
@@ -19,8 +22,9 @@ export default function ImageInput(props:Props) {
         className={classes.input}
         style={{ display: "none" }}
         id="raised-button-file"
-        multiple
         type="file"
+        name="avatar"
+        onChange={(e:ChangeEvent<HTMLInputElement>) => {const target = e.target as HTMLInputElement ; setAvatar(target.files)}}
       />
       <Box mt={2.8} mr={4}>
         <label htmlFor="raised-button-file">

@@ -78,7 +78,7 @@ const useStyles = makeStyles(() => ({
 
 type Props={
    state:ReduxState,
-   asyncUpdateCardRequest:(obj:any)=>any,
+   asyncUpdateCardRequest:(obj:any, form?:any)=>any,
    asyncAddCardRequest(card:Card):Promise<void>,
    asyncDeleteCardRequest(card_id:number):Promise<void>,
    match:{params:{id:string}}
@@ -100,6 +100,7 @@ const ProfilePage = (props:Props) => {
   const [card, setCard] = useState(cardTemplate);
   const [openModal, setOpenModal] = useState(false);
   const [wasChanged, setWasChanged] = useState(false);
+  const [avatar, setAvatar] = useState<any>(null);
   const [redirect, setRedirect] = useState(false);
   const {
     asyncUpdateCardRequest,
@@ -109,11 +110,18 @@ const ProfilePage = (props:Props) => {
   } = props;
   const classes:any = useStyles();
 
-  const handleSubmit = (e:FormEvent<Element>) => {
+  const handleSubmit = async (e:FormEvent<Element>) => {
     e.preventDefault();
     setWasChanged(false);
+    let formData:null|FormData = null;
+    if(avatar){
+     const file = avatar[0];
+     formData = new FormData();
+     formData.append('avatar', file ,file.name);
+    }
     if (card.id) {
-      asyncUpdateCardRequest(card);
+      const new_image:string = await asyncUpdateCardRequest(card,formData);
+      setCard({...card,image_url:new_image});
     } else {
       card.image_url = `https://robohash.org/${Math.random()}?set=any`;
       asyncAddCardRequest(card);
@@ -156,7 +164,7 @@ const ProfilePage = (props:Props) => {
         onError={(errors:any[]) => console.log(errors)}
       >
         <Grid className={classes.form_container}>
-          <ImageInput classes={classes} card={card} />
+          <ImageInput avatar = {avatar} setAvatar={setAvatar} classes={classes} card={card}/>
           <Grid
             container={true}
             className={classes.input_texts}
