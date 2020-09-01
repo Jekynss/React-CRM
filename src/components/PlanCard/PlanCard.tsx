@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 
 type Props = {
   name:string, 
-  price:number, 
+  price:string, 
   description:string, 
   onClick:()=>void
 }

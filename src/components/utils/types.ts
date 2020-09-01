@@ -12,18 +12,6 @@ export type Card = {
   skills?:string[]
 };
 
-export type dublicateCard = {
-  id:number,
-  name: string,
-  description: string,
-  phone: string,
-  website: string,
-  email: string,
-  address: string,
-  image_url: string,
-  skills?:string[]
-};
-
 export type Product = {
   id: number,
   name: string,

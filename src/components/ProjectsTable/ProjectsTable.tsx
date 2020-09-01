@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect,ChangeEvent } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -160,6 +160,80 @@ function ProjectsTable(props:Props) {
           title="Projects Table"
           columns={table.columns as Column<Project>[]}
           data={table.data as any[]}
+          components={{
+            EditField: (fieldProps) => {
+              const {
+                columnDef: { multiplySelectStack, multiplySelectDevs },
+              } = fieldProps;
+              if (multiplySelectStack) {
+                return (
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    value={personName}
+                    options={stackNames as any}
+                    onChange={(event: ChangeEvent<{}>,val:any) => {
+                      setPersonName(val);
+                    }}
+                    getOptionLabel={(option) => option as any}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Stack"
+                        placeholder="Stack"
+                      />
+                    )}
+                  />
+                );
+              } else if (multiplySelectDevs) {
+                return (
+                  <Autocomplete
+                    multiple
+                    id="tags-standard"
+                    value={developersName}
+                    options={developers}
+                    onChange={(e, val) => {
+                      setDevelopersName(val);
+                    }}
+                    getOptionLabel={(option) => option.name}
+                    renderOption={(option, { selected }) => (
+                      <>
+                        <Box component="span" mx={2}>
+                          <CardMedia
+                            component="img"
+                            alt="Contemplative Reptile"
+                            height="30"
+                            image={option.image_url}
+                            title="Contemplative Reptile"
+                            className={classes.image}
+                          />
+                        </Box>
+                        <ListItemText primary={option.name} />
+                      </>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        label="Developers"
+                        placeholder="Developers"
+                      />
+                    )}
+                  />
+                );
+              } else {
+                return (
+                  <Box mt="19px" className={classes.form_input}>
+                    <MTableEditField
+                      className={classes.formControl}
+                      {...{ ...fieldProps, value: fieldProps.value || "" }}
+                    />
+                  </Box>
+                );
+              }
+            },
+          }}
           options={{
             actionsColumnIndex: -1,
             cellStyle: {

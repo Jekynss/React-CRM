@@ -7,11 +7,11 @@ import CardActionArea from "@material-ui/core/CardActionArea";
 import CardMedia from "@material-ui/core/CardMedia";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-import Card from "@material-ui/core/Card";
+import CardTag from "@material-ui/core/Card";
 import Typography from "@material-ui/core/Typography";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { dublicateCard } from '../utils/types';
+import { Card } from '../utils/types';
 
 const useStyles = makeStyles(() => ({
     card_box: {
@@ -33,7 +33,7 @@ const useStyles = makeStyles(() => ({
   }));
 
   type Props = {
-    elem: dublicateCard, 
+    elem: Card, 
     handleOpenModal:()=>void, 
     setItemMenu:(elem_id:string)=>void, 
     itemMenu:string,
@@ -56,7 +56,7 @@ function ProfileCard(props:Props) {
     const classes = useStyles();
     return (
         <Box className={classes.card_box} m={4} width="260px">
-        <Card className={classes.card}>
+        <CardTag className={classes.card}>
           <Link className={classes.link} to={`/people/${elem.id}`}>
             <CardActionArea>
               <CardMedia
@@ -109,7 +109,7 @@ function ProfileCard(props:Props) {
               {elem.description}
             </Typography>
           </CardContent>
-        </Card>
+        </CardTag>
       </Box>
     )
 }

@@ -77,7 +77,7 @@ export const paidStatus = (status:string): StripeActionTypes=> ({
   payload: { status },
 });
 
-export const asyncAddCardRequest = (card:Card) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncAddCardRequest = (card:Card) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.post(
@@ -97,7 +97,7 @@ export const asyncAddCardRequest = (card:Card) => async (dispatch:(obj: Dispatch
   }
 };
 
-export const asyncDeleteCardRequest = (card_id:number) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncDeleteCardRequest = (card_id:number) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.delete(
@@ -116,7 +116,7 @@ export const asyncDeleteCardRequest = (card_id:number) => async (dispatch:(obj: 
   }
 };
 
-export const asyncUpdateCardRequest = (card:Card) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncUpdateCardRequest = (card:Card) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const {
@@ -136,7 +136,7 @@ export const asyncUpdateCardRequest = (card:Card) => async (dispatch:(obj: Dispa
   }
 };
 
-export const asyncRegisterUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncRegisterUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const { data } = await Axios.post(
       `http://127.0.0.1:3002/api/v1/users/registration`,
@@ -152,7 +152,7 @@ export const asyncRegisterUser = (user:User) => async (dispatch:(obj: DispatchTy
   }
 };
 
-export const asyncAuthorizeUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncAuthorizeUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const { data } = await Axios.post(
       `http://127.0.0.1:3002/api/v1/users/login`,
@@ -170,7 +170,7 @@ export const asyncAuthorizeUser = (user:User) => async (dispatch:(obj: DispatchT
   }
 };
 
-export const asyncSetProjects = () => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncSetProjects = () => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.get("http://localhost:3002/api/v1/projects", {
@@ -182,7 +182,7 @@ export const asyncSetProjects = () => async (dispatch:(obj: DispatchType)=>Promi
   }
 };
 
-export const asyncDeleteProject = (id:number) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncDeleteProject = (id:number) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
@@ -263,7 +263,7 @@ export const asyncUpdateProject = (project:Project) => async (dispatch:(obj: Dis
   }
 };
 
-export const getSubscriptionStatus = () => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const getSubscriptionStatus = () => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const {
@@ -275,7 +275,7 @@ export const getSubscriptionStatus = () => async (dispatch:(obj: DispatchType)=>
   } catch (err) { }
 };
 
-export const asyncSubscribe = (payload:object) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncSubscribe = (payload:object) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const {
@@ -297,7 +297,7 @@ export const asyncSubscribe = (payload:object) => async (dispatch:(obj: Dispatch
   }
 };
 
-export const asyncSetAuth = () => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncSetAuth = () => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
   try {
     const token = getCurentToken();
     const tokenValid = await Axios.get(

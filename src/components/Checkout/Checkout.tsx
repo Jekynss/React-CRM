@@ -1,11 +1,12 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import "./Checkout.css";
 import { connect } from "react-redux";
 import { asyncSubscribe } from "../../redux/actions/CardsAction";
-import PlanCard from "../PlanCard/PlanCard.tsx";
+import PlanCard from "../PlanCard/PlanCard";
 import { Box } from "@material-ui/core";
 import {Product} from '../utils/types'
+import { StripeCardElement, StripeCardElementOptions } from "@stripe/stripe-js";
 
 const CARD_OPTIONS = {
   iconStyle: "solid",
@@ -34,11 +35,26 @@ const CARD_OPTIONS = {
   },
 };
 
-const CardField = ({ onChange }) => (
+type CardFieldProps = {
+  onChange:(e:any)=>void
+}
+
+const CardField = ({ onChange }:CardFieldProps) => (
   <div className="FormRow">
-    <CardElement options={CARD_OPTIONS} onChange={onChange} />
+    <CardElement options={CARD_OPTIONS as any} onChange={onChange} />
   </div>
 );
+
+type FieldProps = {
+  label:string,
+  id:string,
+  type:string,
+  placeholder:string,
+  required:boolean,
+  autoComplete:string|undefined,
+  value:string,
+  onChange:(e:ChangeEvent<HTMLInputElement>)=>void
+}
 
 const Field = ({
   label,
@@ -49,7 +65,7 @@ const Field = ({
   autoComplete,
   value,
   onChange,
-}) => (
+}:FieldProps) => (
     <div className="FormRow">
       <label htmlFor={id} className="FormRowLabel">
         {label}
@@ -67,7 +83,14 @@ const Field = ({
     </div>
   );
 
-const SubmitButton = ({ processing, error, children, disabled }) => (
+  type SubmitProps = {
+    processing:boolean,
+    error:boolean,
+    children:any,
+    disabled:boolean
+  }
+
+const SubmitButton = ({ processing, error, children, disabled }:SubmitProps) => (
   <button
     className={`SubmitButton ${error ? "SubmitButton--error" : ""}`}
     type="submit"
@@ -77,7 +100,11 @@ const SubmitButton = ({ processing, error, children, disabled }) => (
   </button>
 );
 
-const ErrorMessage = ({ children }) => (
+type ErrorProps = {
+  children:any,
+}
+
+const ErrorMessage = ({ children }:ErrorProps) => (
   <div className="ErrorMessage" role="alert">
     <svg width="16" height="16" viewBox="0 0 17 17">
       <path
@@ -93,7 +120,11 @@ const ErrorMessage = ({ children }) => (
   </div>
 );
 
-const ResetButton = ({ onClick }) => (
+type PropsReset = {
+  onClick:()=>void
+}
+
+const ResetButton = ({ onClick }:PropsReset) => (
   <button type="button" className="ResetButton" onClick={onClick}>
     <svg width="32px" height="32px" viewBox="0 0 32 32">
       <path
@@ -107,7 +138,7 @@ const ResetButton = ({ onClick }) => (
 type Props = {
   asyncSubscribe: (plan_obj: {
     plan: string,
-    payment_method: string,
+    payment_method: string|undefined,
   }
   ) => Promise<void>
 }
@@ -116,17 +147,26 @@ function Checkout(props: Props) {
   const { asyncSubscribe } = props;
   const stripe = useStripe();
   const elements = useElements();
-  const [error, setError] = useState(null);
-  const [cardComplete, setCardComplete] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(null);
+  const [error, setError] = useState<any>(null);
+  const [cardComplete, setCardComplete] = useState<boolean>(false);
+  const [processing, setProcessing] = useState<boolean>(false);
+  const [paymentMethod, setPaymentMethod] = useState<string|null|undefined>(null);
   const [billingDetails, setBillingDetails] = useState({
     email: "",
     phone: "",
     name: "",
   });
 
-  const [selectedPlan, setSelectedPlan] = useState<Object>({plan:'',payment_method:''});
+  type SelectedPlanType = {
+    name?:string,
+    price?:string,
+    plan:string,
+    payment_method?:string,
+  }
+
+  const blank_selected_plan = {plan:'',payment_method:''};
+
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlanType|Product>(blank_selected_plan);
 
   const products = [
     {
@@ -171,9 +211,9 @@ function Checkout(props: Props) {
       setProcessing(true);
     }
 
-    const payload = await stripe.createPaymentMethod({
+    const payload:any = await stripe.createPaymentMethod({
       type: "card",
-      card: elements.getElement(CardElement),
+      card: elements.getElement(CardElement) as StripeCardElement,
       billing_details: billingDetails,
     });
 
@@ -216,8 +256,7 @@ function Checkout(props: Props) {
                 Payment successful
                 </div>
               <div className="ResultMessage">
-                You successfully subscribe with PaymentMethod:
-                  {paymentMethod.id}
+                You successfully subscribe
               </div>
               <ResetButton onClick={reset} />
             </div>
@@ -234,7 +273,7 @@ function Checkout(props: Props) {
                       required
                       autoComplete="name"
                       value={billingDetails.name}
-                      onChange={(e) => {
+                      onChange={(e:ChangeEvent<HTMLInputElement>) => {
                         setBillingDetails({
                           ...billingDetails,
                           name: e.target.value,
@@ -249,7 +288,7 @@ function Checkout(props: Props) {
                       required
                       autoComplete="email"
                       value={billingDetails.email}
-                      onChange={(e) => {
+                      onChange={(e:ChangeEvent<HTMLInputElement>) => {
                         setBillingDetails({
                           ...billingDetails,
                           email: e.target.value,
@@ -264,7 +303,7 @@ function Checkout(props: Props) {
                       required
                       autoComplete="tel"
                       value={billingDetails.phone}
-                      onChange={(e) => {
+                      onChange={(e:ChangeEvent<HTMLInputElement>) => {
                         setBillingDetails({
                           ...billingDetails,
                           phone: e.target.value,
@@ -274,13 +313,13 @@ function Checkout(props: Props) {
                   </fieldset>
                   <fieldset className="FormGroup">
                     <CardField
-                      onChange={(e) => {
+                      onChange={(e:any) => {
                         setError(e.error);
                         setCardComplete(e.complete);
                       }}
                     />
                   </fieldset>
-                  {error && <ErrorMessage>{error?.message}</ErrorMessage>}
+                  {error && <ErrorMessage>{error.message}</ErrorMessage>}
                   <SubmitButton
                     processing={processing}
                     error={error}
@@ -292,7 +331,7 @@ function Checkout(props: Props) {
                     <button
                       style={CARD_OPTIONS.style.backButton}
                       onClick={() => {
-                        setSelectedPlan(null);
+                        setSelectedPlan(blank_selected_plan);
                       }}
                     >
                       back

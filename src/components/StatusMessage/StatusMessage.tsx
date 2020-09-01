@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 function StatusMessage(props:Props) {
     const [openPopup, setOpenPopup] = useState('');
     const {closePopup,popup,error} = props;
-    const classes:any = useStyles();
+    const classes = useStyles();
 
     useEffect(() => {
         setOpenPopup(popup);
@@ -54,7 +54,7 @@ function StatusMessage(props:Props) {
                   closePopup();
                 }}
               >
-                <CloseIcon className={classes.close_popup} fontSize="inherit" />
+                <CloseIcon fontSize="inherit" />
               </IconButton>
             }
           >
