@@ -54,7 +54,7 @@ export type ReduxState = {
   token: string,
   projects: Project[],
   paidStatus: string,
-  isAuth: boolean,
+  isAuth: boolean|null,
   popup:string,
   redirectLink:string,
 };

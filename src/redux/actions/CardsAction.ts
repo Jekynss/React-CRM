@@ -156,7 +156,7 @@ export const asyncRegisterUser = (user: User) => async (dispatch: (obj: Dispatch
     dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
-      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+      showErrorPopup(`${error?.message}: ${error?.response?.data?.message}`)
     );
   }
 };

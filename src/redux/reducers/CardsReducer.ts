@@ -12,7 +12,7 @@ const initialState:ReduxState = {
   projects: [],
   paidStatus: "",
   popup:"",
-  isAuth:false,
+  isAuth:null,
   redirectLink:''
 };
 
