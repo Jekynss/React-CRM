@@ -77,7 +77,7 @@ export const paidStatus = (status: string): StripeActionTypes => ({
   payload: { status },
 });
 
-export const asyncAddCardRequest = (card: Card) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
+export const asyncAddCardRequest = (card: Card, formData?: FormData) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.post(
@@ -85,7 +85,18 @@ export const asyncAddCardRequest = (card: Card) => async (dispatch: (obj: Dispat
       card,
       { headers: { token: token } }
     );
-    dispatch(addCard(data.data));
+    if (formData) {
+      const res: any = await Axios({
+        url: `http://127.0.0.1:3002/api/v1/people/${data.data.id}`,
+        method: 'PUT',
+        data: formData,
+        headers: { token: token }
+      });
+      dispatch(addCard({ ...data.data, image_url: res.data.image_url }))
+    }
+    else {
+      dispatch(addCard(data.data));
+    }
     data.message
       ? dispatch(showSuccessPopup(data.message))
       : dispatch(showErrorPopup(data.error));
@@ -116,25 +127,25 @@ export const asyncDeleteCardRequest = (card_id: number) => async (dispatch: (obj
   }
 };
 
-export const asyncUpdateCardRequest = (card: Card, formData?: any) => async (dispatch: (obj: DispatchType) => Promise<string>) => {
+export const asyncUpdateCardRequest = (card: Card, formData?: FormData) => async (dispatch: (obj: DispatchType) => Promise<string>) => {
   try {
     const token = getCurentToken();
-    let res:any;
+    let res: any;
     res = await Axios.put(
       `http://127.0.0.1:3002/api/v1/people/${card.id}`,
       { ...card },
       { headers: { token: token } }
     );
 
-    if (formData){
-    res = await Axios({
-      url: `http://127.0.0.1:3002/api/v1/people/${card.id}`,
-      method: 'PUT',
-      data: formData,
-      headers:{ token: token }
-    })
-  }
-     res.data.image_url ? dispatch(updateCard({...card,image_url:res.data.image_url})) : dispatch(updateCard(card));
+    if (formData) {
+      res = await Axios({
+        url: `http://127.0.0.1:3002/api/v1/people/${card.id}`,
+        method: 'PUT',
+        data: formData,
+        headers: { token: token }
+      })
+    }
+    res.data.image_url ? dispatch(updateCard({ ...card, image_url: res.data.image_url })) : dispatch(updateCard(card));
     dispatch(showSuccessPopup(res.data.message));
     dispatchDebouncer(closePopup, 3000);
     return res.data.image_url;
@@ -316,8 +327,9 @@ export const asyncSetAuth = () => async (dispatch: (obj: DispatchType) => Promis
       }
     );
     dispatch(setAuth(tokenValid.status === 200))
+    return true;
   } catch (error) {
-    dispatch(setToken({}));
+    dispatch(setTokenAuth({}));
     dispatch(setAuth(false))
     console.log(`${error?.message}: ${error?.response?.data.message}`);
   }
@@ -333,7 +345,6 @@ export const asyncUpdateAvatar = (card_id: number, formData: FormData) => async 
       formData,
       { headers: { token: token } }
     );
-    //dispatch(updateCard(card));
     dispatch(showSuccessPopup(data.message));
     dispatchDebouncer(closePopup, 3000);
   } catch (error) {

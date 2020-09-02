@@ -6,7 +6,7 @@ import thunk from "redux-thunk";
 import App from "./App";
 import reducer from "./redux/reducers/CardsReducer";
 import { BrowserRouter } from "react-router-dom";
-import { setToken,asyncSetAuth, setAuth } from "./redux/actions/CardsAction";
+import { setTokenAuth,asyncSetAuth, setAuth } from "./redux/actions/CardsAction";
 
 const composeEnhancers =
   typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -25,7 +25,7 @@ export const dispatch = store.dispatch;
 async function auth() {
   const localToken = JSON.parse(localStorage.getItem("user"));
   if (localToken.token) {
-    dispatch(setToken({ token: localToken.token }));
+    dispatch(setTokenAuth({ token: localToken.token }));
   }
 }
 auth();
