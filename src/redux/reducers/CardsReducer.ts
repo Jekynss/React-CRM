@@ -12,7 +12,7 @@ const initialState:ReduxState = {
   projects: [],
   paidStatus: "",
   popup:"",
-  isAuth:false,
+  isAuth:null,
   redirectLink:''
 };
 
@@ -30,10 +30,12 @@ export default function CardReducer(state:ReduxState = initialState, action:Disp
       };
     }
     case actions.UPDATE_CARD: {
+      console.log(action);
       return {
         ...state,
         cards: state.cards.map((elem) => {
           if (elem.id.toString() === action.card.id.toString()) {
+            console.log({ ...elem, ...action.card });
             return { ...elem, ...action.card };
           } else {
             return elem;

@@ -9,7 +9,7 @@ import { Profile, Project, Card } from "../utils/types";
 type Props = {
   objects:string[] | undefined,
   id:number,
-  asyncUpdate:(obj:Card|Project|Object)=>Project|Profile|Promise<void>|void,
+  asyncUpdate:(obj:Card|Project|Object,FormData?:null|FormData)=>Project|Profile|Promise<void>|void,
   name:string,
   addable?:boolean,
   textAlign?:string,

@@ -41,7 +41,7 @@ export default function FormButtons(props:Props) {
         <Button
           variant="contained"
           id="submit"
-          disabled={!wasChanged}
+          //disabled={!wasChanged}
           color="primary"
           type="submit"
           className={classes.submit_button}

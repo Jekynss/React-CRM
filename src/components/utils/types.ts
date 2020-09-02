@@ -12,6 +12,18 @@ export type Card = {
   skills?:string[]
 };
 
+export type NewCard = {
+  id?:number,
+  name: string,
+  description: string,
+  phone: string,
+  website: string,
+  email: string,
+  address: string,
+  image_url: string,
+  skills?:string[]
+};
+
 export type Product = {
   id: number,
   name: string,
@@ -54,7 +66,7 @@ export type ReduxState = {
   token: string,
   projects: Project[],
   paidStatus: string,
-  isAuth: boolean,
+  isAuth: boolean|null,
   popup:string,
   redirectLink:string,
 };

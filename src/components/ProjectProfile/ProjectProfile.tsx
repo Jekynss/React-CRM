@@ -12,7 +12,6 @@ import PhoneInput from "../PhoneInput/PhoneInput";
 import WebSiteInput from "../WebSiteInput/WebSiteInput";
 import AddressInput from "../AddressInput/AddressInput";
 import DesctiptionInput from "../DescriptionInput/DesctiptionInput";
-import ImageInput from "../ImageInput/ImageInput";
 import FormButtons from "../FormButtons/FormButtons";
 import StatusMessage from "../StatusMessage/StatusMessage";
 import DeleteModal from "../DeleteModal/DeleteModal";

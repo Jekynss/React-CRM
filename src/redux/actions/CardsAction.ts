@@ -3,81 +3,81 @@ import { dispatchDebouncer, getCurentToken } from "../../components/utils";
 import * as constants from '../../constants';
 import { DispatchType, User, Card, Project, ProjectsActionTypes, AuthActionTypes, RedirectActionTypes, StripeActionTypes, PopupActionTypes, LimitActionTypes, CardActionTypes } from '../../components/utils/types';
 
-export const addCard = (card:Card): CardActionTypes => ({
+export const addCard = (card: Card): CardActionTypes => ({
   type: constants.ADD_CARD,
   card,
 });
 
-export const deleteCard = (card_id:number): CardActionTypes=> ({
+export const deleteCard = (card_id: number): CardActionTypes => ({
   type: constants.DELETE_CARD,
   card_id,
 });
 
-export const updateCard = (card:Card): CardActionTypes => ({
+export const updateCard = (card: Card): CardActionTypes => ({
   type: constants.UPDATE_CARD,
   card,
 });
 
-export const setInitialCards = (cards:Card[]): CardActionTypes => ({
+export const setInitialCards = (cards: Card[]): CardActionTypes => ({
   type: constants.SET_INITIAL_CARDS,
   cards,
 });
 
-export const closePopup = ():  PopupActionTypes=> ({
+export const closePopup = (): PopupActionTypes => ({
   type: constants.CLOSE_POPUP,
 });
 
-export const showSuccessPopup = (message:string): PopupActionTypes => ({
+export const showSuccessPopup = (message: string): PopupActionTypes => ({
   type: constants.SHOW_SUCCESS_POPUP,
   message,
 });
 
-export const setAuth = (auth:boolean): AuthActionTypes => ({
+export const setAuth = (auth: boolean): AuthActionTypes => ({
   type: constants.SET_AUTH,
   payload: { auth },
 });
 
-export const showErrorPopup = (message:string): PopupActionTypes => ({
+export const showErrorPopup = (message: string): PopupActionTypes => ({
   type: constants.SHOW_ERROR_POPUP,
   message,
 });
 
-export const setLimitHomeToRedux = (limit:number): LimitActionTypes => ({
+export const setLimitHomeToRedux = (limit: number): LimitActionTypes => ({
   type: constants.SET_LIMIT_HOME,
   limit,
 });
 
-export const setLimitPeopleToRedux = (limit:number): LimitActionTypes => ({
+export const setLimitPeopleToRedux = (limit: number): LimitActionTypes => ({
   type: constants.SET_LIMIT_PEOPLE,
   limit,
 });
 
-export const setToken = (token:object): AuthActionTypes => ({
+export const setToken = (token: object): AuthActionTypes => ({
   type: constants.SET_TOKEN,
   payload: token,
 });
 
-export const setTokenAuth = (user_obj:object): AuthActionTypes => ({
+export const setTokenAuth = (user_obj: object): AuthActionTypes => ({
   type: constants.SET_TOKEN_AUTH,
-  payload:{...user_obj},
+  payload: { ...user_obj },
 });
 
-export const setRedirect = (link:string): RedirectActionTypes => ({
+export const setRedirect = (link: string): RedirectActionTypes => ({
   type: constants.SET_REDIRECT,
   link,
 });
 
-export const setProjects = (projects:Project[]): ProjectsActionTypes => ({
+export const setProjects = (projects: Project[]): ProjectsActionTypes => ({
   type: constants.SET_PROJECTS,
-  payload: {projects},
+  payload: { projects },
 });
 
-export const paidStatus = (status:string): StripeActionTypes=> ({
+export const paidStatus = (status: string): StripeActionTypes => ({
   type: constants.SET_PAID_STATUS,
   payload: { status },
 });
 
-export const asyncAddCardRequest = (card:Card) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncAddCardRequest = (card: Card, formData?: FormData) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.post(
@@ -85,7 +85,18 @@ export const asyncAddCardRequest = (card:Card) => async (dispatch:(obj: Dispatch
       card,
       { headers: { token: token } }
     );
-    dispatch(addCard(data.data));
+    if (formData) {
+      const res: any = await Axios({
+        url: `http://127.0.0.1:3002/api/v1/people/${data.data.id}`,
+        method: 'PUT',
+        data: formData,
+        headers: { token: token }
+      });
+      dispatch(addCard({ ...data.data, image_url: res.data.image_url }))
+    }
+    else {
+      dispatch(addCard(data.data));
+    }
     data.message
       ? dispatch(showSuccessPopup(data.message))
       : dispatch(showErrorPopup(data.error));
@@ -97,7 +108,7 @@ export const asyncAddCardRequest = (card:Card) => async (dispatch:(obj: Dispatch
   }
 };
 
-export const asyncDeleteCardRequest = (card_id:number) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncDeleteCardRequest = (card_id: number) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.delete(
@@ -116,19 +127,28 @@ export const asyncDeleteCardRequest = (card_id:number) => async (dispatch:(obj: 
   }
 };
 
-export const asyncUpdateCardRequest = (card:Card) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncUpdateCardRequest = (card: Card, formData?: FormData) => async (dispatch: (obj: DispatchType) => Promise<string>) => {
   try {
     const token = getCurentToken();
-    const {
-      data,
-    } = await Axios.put(
+    let res: any;
+    res = await Axios.put(
       `http://127.0.0.1:3002/api/v1/people/${card.id}`,
-      card,
+      { ...card },
       { headers: { token: token } }
     );
-    dispatch(updateCard(card));
-    dispatch(showSuccessPopup(data.message));
+
+    if (formData) {
+      res = await Axios({
+        url: `http://127.0.0.1:3002/api/v1/people/${card.id}`,
+        method: 'PUT',
+        data: formData,
+        headers: { token: token }
+      })
+    }
+    res.data.image_url ? dispatch(updateCard({ ...card, image_url: res.data.image_url })) : dispatch(updateCard(card));
+    dispatch(showSuccessPopup(res.data.message));
     dispatchDebouncer(closePopup, 3000);
+    return res.data.image_url;
   } catch (error) {
     dispatch(
       showErrorPopup(`${error.message}: ${error.response.data.message}`)
@@ -136,7 +156,7 @@ export const asyncUpdateCardRequest = (card:Card) => async (dispatch:(obj: Dispa
   }
 };
 
-export const asyncRegisterUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncRegisterUser = (user: User) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const { data } = await Axios.post(
       `http://127.0.0.1:3002/api/v1/users/registration`,
@@ -147,12 +167,12 @@ export const asyncRegisterUser = (user:User) => async (dispatch:(obj: DispatchTy
     dispatchDebouncer(closePopup, 3000);
   } catch (error) {
     dispatch(
-      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+      showErrorPopup(`${error?.message}: ${error?.response?.data?.message}`)
     );
   }
 };
 
-export const asyncAuthorizeUser = (user:User) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncAuthorizeUser = (user: User) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const { data } = await Axios.post(
       `http://127.0.0.1:3002/api/v1/users/login`,
@@ -170,7 +190,7 @@ export const asyncAuthorizeUser = (user:User) => async (dispatch:(obj: DispatchT
   }
 };
 
-export const asyncSetProjects = () => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncSetProjects = () => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.get("http://localhost:3002/api/v1/projects", {
@@ -182,7 +202,7 @@ export const asyncSetProjects = () => async (dispatch:(obj: DispatchType)=>Promi
   }
 };
 
-export const asyncDeleteProject = (id:number) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncDeleteProject = (id: number) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.delete(`http://localhost:3002/api/v1/projects/${id}`, {
@@ -197,7 +217,7 @@ export const asyncDeleteProject = (id:number) => async (dispatch:(obj: DispatchT
   }
 };
 
-export const asyncAddProject = (payload:{project:Project}) => async () => {
+export const asyncAddProject = (payload: { project: Project }) => async () => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.post(
@@ -213,7 +233,7 @@ export const asyncAddProject = (payload:{project:Project}) => async () => {
   }
 };
 
-export const asyncGetProjects = (id:number) => async () => {
+export const asyncGetProjects = (id: number) => async () => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.get(
@@ -228,7 +248,7 @@ export const asyncGetProjects = (id:number) => async () => {
   }
 };
 
-export const asyncGetProject = (id:number) => async () => {
+export const asyncGetProject = (id: number) => async () => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.get(
@@ -243,7 +263,7 @@ export const asyncGetProject = (id:number) => async () => {
   }
 };
 
-export const asyncUpdateProject = (project:Project) => async (dispatch:(obj: DispatchType)=>Promise<any>) => {
+export const asyncUpdateProject = (project: Project) => async (dispatch: (obj: DispatchType) => Promise<any>) => {
   try {
     const token = getCurentToken();
     const { data } = await Axios.put(
@@ -263,7 +283,7 @@ export const asyncUpdateProject = (project:Project) => async (dispatch:(obj: Dis
   }
 };
 
-export const getSubscriptionStatus = () => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const getSubscriptionStatus = () => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const {
@@ -275,7 +295,7 @@ export const getSubscriptionStatus = () => async (dispatch:(obj: DispatchType)=>
   } catch (err) { }
 };
 
-export const asyncSubscribe = (payload:object) => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncSubscribe = (payload: object) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const {
@@ -297,7 +317,7 @@ export const asyncSubscribe = (payload:object) => async (dispatch:(obj: Dispatch
   }
 };
 
-export const asyncSetAuth = () => async (dispatch:(obj: DispatchType)=>Promise<void>) => {
+export const asyncSetAuth = () => async (dispatch: (obj: DispatchType) => Promise<void>) => {
   try {
     const token = getCurentToken();
     const tokenValid = await Axios.get(
@@ -307,9 +327,29 @@ export const asyncSetAuth = () => async (dispatch:(obj: DispatchType)=>Promise<v
       }
     );
     dispatch(setAuth(tokenValid.status === 200))
+    return true;
   } catch (error) {
-    dispatch(setToken({}));
+    dispatch(setTokenAuth({}));
     dispatch(setAuth(false))
     console.log(`${error?.message}: ${error?.response?.data.message}`);
+  }
+};
+
+export const asyncUpdateAvatar = (card_id: number, formData: FormData) => async (dispatch: (obj: DispatchType) => Promise<void>) => {
+  try {
+    const token = getCurentToken();
+    const {
+      data,
+    } = await Axios.put(
+      `http://127.0.0.1:3002/api/v1/people/${card_id}`,
+      formData,
+      { headers: { token: token } }
+    );
+    dispatch(showSuccessPopup(data.message));
+    dispatchDebouncer(closePopup, 3000);
+  } catch (error) {
+    dispatch(
+      showErrorPopup(`${error.message}: ${error.response.data.message}`)
+    );
   }
 };

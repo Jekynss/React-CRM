@@ -22,7 +22,7 @@ import { useHistory } from "react-router-dom";
 import { ValidatorForm } from "react-material-ui-form-validator";
 import ProjectsBadgesSection from "../components/ProjectsBadgesSection/ProjectsBadgesSection";
 import BadgesSection from "../components/BadgesSection/BadgesSection";
-import {ReduxState, Card , Project,Profile} from '../components/utils/types'
+import { ReduxState, NewCard, Card, Project, Profile } from '../components/utils/types'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -76,17 +76,16 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-type Props={
-   state:ReduxState,
-   asyncUpdateCardRequest:(obj:any)=>any,
-   asyncAddCardRequest(card:Card):Promise<void>,
-   asyncDeleteCardRequest(card_id:number):Promise<void>,
-   match:{params:{id:string}}
+type Props = {
+  state: ReduxState,
+  asyncUpdateCardRequest: (obj: any, form?: any) => any,
+  asyncAddCardRequest(card: NewCard, form?: FormData | null): Promise<void>,
+  asyncDeleteCardRequest(card_id: number): Promise<void>,
+  match: { params: { id: string } }
 }
 
-const ProfilePage = (props:Props) => {
-  const cardTemplate:Card = {
-    id:0,
+const ProfilePage = (props: Props) => {
+  const cardTemplate: NewCard = {
     name: "",
     description: "",
     phone: "",
@@ -94,12 +93,12 @@ const ProfilePage = (props:Props) => {
     email: "",
     address: "",
     image_url: "",
-    skills:[""],
   };
   const history = useHistory();
   const [card, setCard] = useState(cardTemplate);
   const [openModal, setOpenModal] = useState(false);
   const [wasChanged, setWasChanged] = useState(false);
+  const [avatar, setAvatar] = useState<any>(null);
   const [redirect, setRedirect] = useState(false);
   const {
     asyncUpdateCardRequest,
@@ -107,26 +106,37 @@ const ProfilePage = (props:Props) => {
     asyncDeleteCardRequest,
     state,
   } = props;
-  const classes:any = useStyles();
+  const classes: any = useStyles();
 
-  const handleSubmit = (e:FormEvent<Element>) => {
+  const handleSubmit = async (e: FormEvent<Element>) => {
     e.preventDefault();
     setWasChanged(false);
+    let formData: null | FormData = null;
+    if (avatar) {
+      const file = avatar[0];
+      formData = new FormData();
+      formData.append('avatar', file, file.name);
+    }
     if (card.id) {
-      asyncUpdateCardRequest(card);
+      const new_image: string = await asyncUpdateCardRequest(card, formData);
+      setCard({ ...card, image_url: new_image });
     } else {
-      card.image_url = `https://robohash.org/${Math.random()}?set=any`;
-      asyncAddCardRequest(card);
+      if (!avatar) {
+        asyncAddCardRequest(card);
+      }
+      else {
+        asyncAddCardRequest(card, formData);
+      }
       setRedirect(true);
     }
   };
 
-  const handleChange = (e:ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!wasChanged) setWasChanged(true);
     setCard({ ...card, [e.target.name]: e.target.value });
   };
 
-  const handleClickDelete:(event:React.MouseEvent<HTMLButtonElement,MouseEvent> ) => void = () => {
+  const handleClickDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void = () => {
     setOpenModal(true);
   };
 
@@ -135,14 +145,14 @@ const ProfilePage = (props:Props) => {
   };
 
   const handleClickDeleteModal = () => {
-    asyncDeleteCardRequest(card.id);
+    asyncDeleteCardRequest(card.id as number);
     setOpenModal(false);
     history.goBack();
   };
 
   useEffect(() => {
     const current_id = props.match.params.id;
-    const card = state.cards.find((card) => card.id.toString() === current_id);
+    const card = state.cards.find((card) => (card.id).toString() === current_id);
     card ? setCard(card) : setCard(cardTemplate);
   }, [state.cards]);
 
@@ -153,10 +163,10 @@ const ProfilePage = (props:Props) => {
       <ValidatorForm
         onSubmit={handleSubmit}
         className={classes.main_form}
-        onError={(errors:any[]) => console.log(errors)}
+        onError={(errors: any[]) => console.log(errors)}
       >
         <Grid className={classes.form_container}>
-          <ImageInput classes={classes} card={card} />
+          <ImageInput avatar={avatar} setAvatar={setAvatar} classes={classes} card={card as Card} />
           <Grid
             container={true}
             className={classes.input_texts}
@@ -165,7 +175,7 @@ const ProfilePage = (props:Props) => {
           >
             <FullNameInput
               handleChange={handleChange}
-              obj={card}
+              obj={card as Card}
               classes={classes}
             />
             <EmailInput
@@ -173,14 +183,14 @@ const ProfilePage = (props:Props) => {
               obj={card}
               classes={classes}
             />
-            <PhoneInput handleChange={handleChange} card={card} />
-            <WebSiteInput handleChange={handleChange} card={card} />
-            <AddressInput handleChange={handleChange} card={card} />
+            <PhoneInput handleChange={handleChange} card={card as Card} />
+            <WebSiteInput handleChange={handleChange} card={card as Card} />
+            <AddressInput handleChange={handleChange} card={card as Card} />
           </Grid>
         </Grid>
         <DesctiptionInput
           handleChange={handleChange}
-          card={card}
+          card={card as Card}
           about_text={classes.about_text}
         />
         {card.id ? (
@@ -199,7 +209,7 @@ const ProfilePage = (props:Props) => {
         <FormButtons
           wasChanged={wasChanged}
           classes={classes}
-          card={card}
+          card={card as Card}
           handleClickDelete={handleClickDelete}
           goBack={history.goBack}
         />
@@ -214,7 +224,7 @@ const ProfilePage = (props:Props) => {
   );
 }
 
-const mapStateToProps = (state:ReduxState) => ({
+const mapStateToProps = (state: ReduxState) => ({
   state,
 });
 

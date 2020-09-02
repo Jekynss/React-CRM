@@ -20,6 +20,7 @@ import RegistrationPage from "./pages/RegistrationPage";
 import AuthRoute from "./components/AuthRoute/AuthRoute";
 import ProjectPage from "./pages/ProjectPage";
 import StripeCheckout from "./pages/StripeCheckout";
+import { CircularProgress } from "@material-ui/core";
 
 function App(props) {
   const {
@@ -29,6 +30,7 @@ function App(props) {
     getSubscriptionStatus,
     isAuth,
     asyncSetAuth,
+    paidStatus,
   } = props;
 
   async function checkPaid() {
@@ -97,7 +99,8 @@ function App(props) {
 
 const mapStateToProps = (state) => ({
   token: state.token,
-  isAuth: state.isAuth
+  isAuth: state.isAuth,
+  paidStatus: state.paidStatus,
 });
 const mapDispatchToProps = {
   setInitialCards,

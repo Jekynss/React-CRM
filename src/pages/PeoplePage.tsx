@@ -19,7 +19,7 @@ const mapStateToProps = ({limitPeople}: ReduxState) => ({
   });
   
   const mapDispatchToProps = {
-    setLimitToRedux:setLimitPeopleToRedux
+    setLimitPeopleToRedux
   };
   
   export default connect(mapStateToProps, mapDispatchToProps)(PeoplePage);
