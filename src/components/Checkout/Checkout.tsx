@@ -164,9 +164,7 @@ function Checkout(props: Props) {
     payment_method?:string,
   }
 
-  const blank_selected_plan = {plan:'',payment_method:''};
-
-  const [selectedPlan, setSelectedPlan] = useState<SelectedPlanType|Product>(blank_selected_plan);
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlanType|Product|null>(null);
 
   const products = [
     {
@@ -218,7 +216,7 @@ function Checkout(props: Props) {
     });
 
     await asyncSubscribe({
-      plan: selectedPlan.plan,
+      plan: selectedPlan?.plan as string,
       payment_method: payload.paymentMethod.id,
     });
 
@@ -331,7 +329,7 @@ function Checkout(props: Props) {
                     <button
                       style={CARD_OPTIONS.style.backButton}
                       onClick={() => {
-                        setSelectedPlan(blank_selected_plan);
+                        setSelectedPlan(null);
                       }}
                     >
                       back
